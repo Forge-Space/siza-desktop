@@ -1,0 +1,37 @@
+name: Trivy Security Scan
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '10 4 * * *'
+
+jobs:
+  trivy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Trivy vulnerability scanner
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace" \
+            -w /workspace \
+            aquasec/trivy:0.56.1 \
+            fs \
+            --ignore-unfixed \
+            --severity CRITICAL,HIGH \
+            --vuln-type os,library \
+            --format sarif \
+            --output trivy-results.sarif \
+            --exit-code 1 \
+            .
+      - name: Upload Trivy results to GitHub Security tab
+        if: always() && hashFiles('trivy-results.sarif') != ''
+        uses: github/codeql-action/upload-sarif@820e3160e279568db735cee8ed8f8e77a6da7818
+        with:
+          sarif_file: trivy-results.sarif
