@@ -64,6 +64,19 @@ describe('SettingsPage', () => {
     expect(screen.getByText('Saved!')).toBeInTheDocument();
   });
 
+  it('resets "Saved!" back to "Save" after 2 seconds', async () => {
+    const user = userEvent.setup();
+    render(<SettingsPage />);
+    await waitFor(() => screen.getByDisplayValue('http://localhost:11434'));
+
+    await user.click(screen.getByRole('button', { name: /save/i }));
+    expect(screen.getByText('Saved!')).toBeInTheDocument();
+
+    // Wait for the 2s timeout to fire and reset the label
+    await waitFor(() => expect(screen.queryByText('Saved!')).not.toBeInTheDocument(), { timeout: 3000 });
+    expect(screen.getByText('Save')).toBeInTheDocument();
+  });
+
   it('shows email when session is set', () => {
     mockSession = { email: 'test@example.com' };
     render(<SettingsPage />);

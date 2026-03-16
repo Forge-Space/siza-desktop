@@ -113,6 +113,15 @@ describe('ModelManagerPage', () => {
     });
   });
 
+  it('shows fallback delete error message when error field is null', async () => {
+    vi.mocked(window.desktop.ollama.deleteModel).mockResolvedValue({ success: false, error: null });
+    render(<ModelManagerPage />);
+    await screen.findByText('llama3.2');
+    const deleteBtn = screen.getByRole('button', { name: /delete llama3\.2/i });
+    await act(async () => { fireEvent.click(deleteBtn); });
+    expect(await screen.findByText('Delete failed')).toBeInTheDocument();
+  });
+
   it('shows pull progress bar when pulling', async () => {
     let progressCallback: ((p: { status: string; total: number; completed: number; done: boolean }) => void) | null = null;
     vi.mocked(window.desktop.ollama.pullModel).mockImplementation((_name, onProgress) => {

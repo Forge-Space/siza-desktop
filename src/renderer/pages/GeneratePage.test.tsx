@@ -212,6 +212,26 @@ describe('GeneratePage', () => {
     });
   });
 
+  it('changes selected model when model selector changes', async () => {
+    (mockDesktop.ollama.getStatus as ReturnType<typeof vi.fn>).mockResolvedValue({
+      healthy: true,
+      models: [{ name: 'llama2' }, { name: 'mistral' }],
+      error: null,
+    });
+    (mockDesktop.generate.component as ReturnType<typeof vi.fn>).mockResolvedValue({
+      files: [{ path: 'Button.tsx', content: 'export function Button() {}' }],
+      llmUsed: true,
+      model: 'mistral',
+    });
+    const user = userEvent.setup();
+    render(<GeneratePage />);
+    await waitFor(() => screen.getByRole('button', { name: /llm mode/i }));
+    await user.click(screen.getByRole('button', { name: /llm mode/i }));
+    const select = await screen.findByLabelText('Model');
+    await user.selectOptions(select, 'mistral');
+    expect((select as HTMLSelectElement).value).toBe('mistral');
+  });
+
   it('framework tabs switch framework selection', async () => {
     const user = userEvent.setup();
     render(<GeneratePage />);
