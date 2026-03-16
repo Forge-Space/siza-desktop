@@ -4,6 +4,9 @@ import { CHANNELS } from '../shared/bridge';
 import { registerAuthHandlers } from './ipc/auth';
 import { registerOllamaHandlers } from './ipc/ollama';
 import { registerGenerateHandlers } from './ipc/generate';
+import { registerUpdaterHandlers } from './ipc/updater';
+import { registerFilesHandlers } from './ipc/files';
+import { registerOnboardingHandlers } from './ipc/onboarding';
 
 function createWindow(): BrowserWindow {
   const win = new BrowserWindow({
@@ -23,6 +26,9 @@ app.whenReady().then(() => {
   registerAuthHandlers();
   registerOllamaHandlers();
   registerGenerateHandlers();
+  registerUpdaterHandlers();
+  registerFilesHandlers();
+  registerOnboardingHandlers();
   createWindow();
 
   app.on('activate', () => {

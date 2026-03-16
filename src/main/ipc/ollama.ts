@@ -8,11 +8,15 @@ export function getBaseUrl(): string {
   return ollamaBaseUrl;
 }
 
+export function setBaseUrl(url: string): void {
+  ollamaBaseUrl = url.replace(/\/$/, '');
+}
+
 export function registerOllamaHandlers(): void {
   ipcMain.handle(CHANNELS.ollamaGetBaseUrl, (): string => ollamaBaseUrl);
 
   ipcMain.handle(CHANNELS.ollamaSetBaseUrl, (_event, url: string): void => {
-    ollamaBaseUrl = url.replace(/\/$/, '');
+    setBaseUrl(url);
   });
 
   ipcMain.handle(CHANNELS.ollamaGetStatus, async (): Promise<OllamaStatus> => {

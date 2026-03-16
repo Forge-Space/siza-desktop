@@ -16,6 +16,20 @@ const desktopBridge: DesktopBridge = {
   },
   generate: {
     component: (req) => ipcRenderer.invoke(CHANNELS.generateComponent, req)
+  },
+  updater: {
+    check: () => ipcRenderer.invoke(CHANNELS.updaterCheck),
+    download: () => ipcRenderer.invoke(CHANNELS.updaterDownload),
+    install: () => ipcRenderer.invoke(CHANNELS.updaterInstall),
+    status: () => ipcRenderer.invoke(CHANNELS.updaterStatus)
+  },
+  files: {
+    saveGenerated: (req) => ipcRenderer.invoke(CHANNELS.filesSaveGenerated, req)
+  },
+  onboarding: {
+    getState: () => ipcRenderer.invoke(CHANNELS.onboardingGetState),
+    complete: (ollamaUrl) => ipcRenderer.invoke(CHANNELS.onboardingComplete, ollamaUrl),
+    reset: () => ipcRenderer.invoke(CHANNELS.onboardingReset)
   }
 };
 

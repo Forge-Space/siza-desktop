@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Sparkles, Copy, Check, AlertCircle, FileCode, Zap } from 'lucide-react';
+import { Sparkles, Copy, Check, AlertCircle, FileCode, Zap, Download } from 'lucide-react';
 import type { OllamaModel, GeneratedFile } from '../../shared/bridge';
 import { cn } from '../lib/utils';
 
@@ -24,6 +24,9 @@ export default function GeneratePage() {
   const [error, setError] = useState<string | null>(null);
   const [llmUsed, setLlmUsed] = useState<boolean | null>(null);
   const [usedModel, setUsedModel] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [savedTo, setSavedTo] = useState<string | null>(null);
 
   useEffect(() => {
     window.desktop.ollama.getStatus().then(status => {
@@ -60,6 +63,22 @@ export default function GeneratePage() {
       setError(err instanceof Error ? err.message : 'Generation failed');
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleSaveToDisk() {
+    if (!files.length) return;
+    setSaving(true);
+    setSaveError(null);
+    setSavedTo(null);
+    try {
+      const result = await window.desktop.files.saveGenerated({ files });
+      if (result.error) throw new Error(result.error);
+      setSavedTo(result.savedTo);
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'Save failed');
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -239,6 +258,15 @@ export default function GeneratePage() {
               )}
               <button
                 type="button"
+                onClick={handleSaveToDisk}
+                disabled={saving}
+                className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+              >
+                <Download className="w-3 h-3" />
+                {saving ? 'Saving…' : 'Save to disk'}
+              </button>
+              <button
+                type="button"
                 onClick={handleCopy}
                 className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
@@ -253,6 +281,14 @@ export default function GeneratePage() {
           )}>
             {files[activeFile]?.content}
           </pre>
+          {saveError && (
+            <p className="text-xs text-destructive mt-1">{saveError}</p>
+          )}
+          {savedTo && (
+            <p className="text-xs text-muted-foreground mt-1 font-mono truncate">
+              Saved to {savedTo}
+            </p>
+          )}
         </div>
       )}
     </div>
