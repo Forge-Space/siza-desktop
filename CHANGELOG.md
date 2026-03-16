@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Improved test coverage: ModelManagerPage pull error path, Enter key trigger, OnboardingPage URL input change and auth-step back button
+- 174 tests total (18 suites); coverage: 97.52% stmts / 89.59% branches / 97.7% funcs
+
 ## [0.5.0] - 2026-03-16
 
 ### Added
