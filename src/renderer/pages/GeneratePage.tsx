@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Sparkles, Copy, Check, AlertCircle, FileCode, Zap, Download } from 'lucide-react';
+import { Sparkles, Copy, Check, AlertCircle, FileCode, Zap, Download, History, Trash2 } from 'lucide-react';
 import type { OllamaModel, GeneratedFile } from '../../shared/bridge';
 import { cn } from '../lib/utils';
+import { useGenerationHistory } from '../hooks/useGenerationHistory';
+import type { HistoryEntry } from '../hooks/useGenerationHistory';
 
 const FRAMEWORKS = ['react', 'vue', 'svelte', 'angular'] as const;
 type Framework = typeof FRAMEWORKS[number];
@@ -27,6 +29,9 @@ export default function GeneratePage() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [savedTo, setSavedTo] = useState<string | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
+
+  const { history, addEntry, clearHistory } = useGenerationHistory();
 
   useEffect(() => {
     window.desktop.ollama.getStatus().then(status => {
@@ -59,6 +64,14 @@ export default function GeneratePage() {
       setFiles(result.files);
       setLlmUsed(result.llmUsed ?? false);
       setUsedModel(result.model ?? null);
+      addEntry({
+        componentType: componentType.trim(),
+        framework,
+        componentLibrary,
+        useLlm: result.llmUsed ?? false,
+        model: result.model,
+        files: result.files,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Generation failed');
     } finally {
@@ -89,14 +102,109 @@ export default function GeneratePage() {
     setTimeout(() => setCopied(false), 2000);
   }
 
+  function loadFromHistory(entry: HistoryEntry) {
+    setComponentType(entry.componentType);
+    setFramework(entry.framework as Framework);
+    setComponentLibrary(entry.componentLibrary as ComponentLibrary);
+    setFiles(entry.files);
+    setActiveFile(0);
+    setLlmUsed(entry.useLlm);
+    setUsedModel(entry.model ?? null);
+    setError(null);
+    setSaveError(null);
+    setSavedTo(null);
+    setShowHistory(false);
+  }
+
+  function formatTime(ts: number): string {
+    const d = new Date(ts);
+    const now = Date.now();
+    const diff = now - ts;
+    if (diff < 60_000) return 'just now';
+    if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}m ago`;
+    if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}h ago`;
+    return d.toLocaleDateString();
+  }
+
   return (
     <div className="max-w-3xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Generate</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          AI-powered component generation via siza-gen
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Generate</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            AI-powered component generation via siza-gen
+          </p>
+        </div>
+        {history.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setShowHistory(v => !v)}
+            className={cn(
+              'flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
+              showHistory
+                ? 'bg-primary/10 text-primary border border-primary/30'
+                : 'bg-muted text-muted-foreground hover:text-foreground border border-transparent'
+            )}
+          >
+            <History className="w-4 h-4" />
+            History ({history.length})
+          </button>
+        )}
       </div>
+
+      {showHistory && (
+        <div className="rounded-md border border-border bg-card">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-border">
+            <span className="text-sm font-medium text-foreground">Recent generations</span>
+            <button
+              type="button"
+              onClick={clearHistory}
+              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive transition-colors"
+            >
+              <Trash2 className="w-3 h-3" />
+              Clear
+            </button>
+          </div>
+          <ul className="divide-y divide-border max-h-64 overflow-auto">
+            {history.map(entry => (
+              <li key={entry.id}>
+                <button
+                  type="button"
+                  onClick={() => loadFromHistory(entry)}
+                  className="w-full text-left px-4 py-2.5 hover:bg-muted/50 transition-colors"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm font-medium text-foreground truncate capitalize">
+                      {entry.componentType}
+                    </span>
+                    <span className="text-xs text-muted-foreground shrink-0">
+                      {formatTime(entry.timestamp)}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-xs text-muted-foreground capitalize">{entry.framework}</span>
+                    <span className="text-xs text-muted-foreground">·</span>
+                    <span className="text-xs text-muted-foreground">{entry.componentLibrary}</span>
+                    {entry.useLlm && (
+                      <>
+                        <span className="text-xs text-muted-foreground">·</span>
+                        <span className="flex items-center gap-0.5 text-xs text-primary">
+                          <Zap className="w-2.5 h-2.5" />
+                          {entry.model ?? 'LLM'}
+                        </span>
+                      </>
+                    )}
+                    <span className="text-xs text-muted-foreground">·</span>
+                    <span className="text-xs text-muted-foreground">
+                      {entry.files.length} {entry.files.length === 1 ? 'file' : 'files'}
+                    </span>
+                  </div>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {ollamaHealthy === false && (
         <div className="flex items-center gap-2 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
