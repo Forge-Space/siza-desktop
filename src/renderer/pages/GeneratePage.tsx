@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router';
-import { Sparkles, Copy, Check, AlertCircle, FileCode, Zap, Download, History, Trash2 } from 'lucide-react';
+import { Sparkles, Copy, Check, AlertCircle, FileCode, Zap, Download, History, Trash2, Eye } from 'lucide-react';
 import type { OllamaModel, GeneratedFile } from '../../shared/bridge';
 import { cn } from '../lib/utils';
 import { useGenerationHistory } from '../hooks/useGenerationHistory';
 import type { HistoryEntry } from '../hooks/useGenerationHistory';
+import PreviewPanel from '../components/PreviewPanel';
 
 const FRAMEWORKS = ['react', 'vue', 'svelte', 'angular'] as const;
 type Framework = typeof FRAMEWORKS[number];
@@ -31,6 +32,7 @@ export default function GeneratePage() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [savedTo, setSavedTo] = useState<string | null>(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const { history, addEntry, clearHistory } = useGenerationHistory();
   const location = useLocation();
@@ -384,6 +386,17 @@ export default function GeneratePage() {
               )}
               <button
                 type="button"
+                onClick={() => setShowPreview(p => !p)}
+                className={cn(
+                  'flex items-center gap-1 text-xs transition-colors',
+                  showPreview ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                <Eye className="w-3 h-3" />
+                {showPreview ? 'Code' : 'Preview'}
+              </button>
+              <button
+                type="button"
                 onClick={handleSaveToDisk}
                 disabled={saving}
                 className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
@@ -401,12 +414,16 @@ export default function GeneratePage() {
               </button>
             </div>
           </div>
-          <pre className={cn(
-            'rounded-md border border-border bg-muted p-4 text-sm font-mono',
-            'overflow-auto max-h-[480px] whitespace-pre text-foreground'
-          )}>
-            {files[activeFile]?.content}
-          </pre>
+          {showPreview ? (
+            <PreviewPanel files={files} framework={framework} />
+          ) : (
+            <pre className={cn(
+              'rounded-md border border-border bg-muted p-4 text-sm font-mono',
+              'overflow-auto max-h-[480px] whitespace-pre text-foreground'
+            )}>
+              {files[activeFile]?.content}
+            </pre>
+          )}
           {saveError && (
             <p className="text-xs text-destructive mt-1">{saveError}</p>
           )}

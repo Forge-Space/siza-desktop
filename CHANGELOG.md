@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-03-16
+
+### Added
+- Component preview panel: sandboxed `<iframe>` preview in GeneratePage alongside code output
+- Preview/Code toggle button (Eye icon) in the file output toolbar
+- React components render with Babel standalone + React 18 CDN for live preview; Vue/Svelte/Angular render code as formatted text
+- `PreviewPanel` component (`src/renderer/components/PreviewPanel.tsx`) with 9 unit tests
+- 227 tests total (20 suites); coverage: 98.05% stmts / 93.2% branches / 98.08% funcs
+
 ## [1.0.0] - 2026-03-16
 
 ### Added
@@ -124,7 +133,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Code signing documentation (macOS notarization, Windows Authenticode)
 - App icon scaffold (`build/icon.svg`)
 
-[Unreleased]: https://github.com/Forge-Space/siza-desktop/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/Forge-Space/siza-desktop/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/Forge-Space/siza-desktop/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.9.0...v1.0.0
 [0.9.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.7.0...v0.8.0
