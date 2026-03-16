@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Upgraded typescript-eslint 8.57.0→8.57.1 (patch)
+- Updated siza-desktop skill to v1.12.0
+
 ## [1.1.0] - 2026-03-16
 
 ### Added
