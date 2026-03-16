@@ -1,6 +1,8 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import { join } from 'node:path';
 import { CHANNELS } from '../shared/bridge';
+import { registerAuthHandlers } from './ipc/auth';
+import { registerOllamaHandlers } from './ipc/ollama';
 
 function createWindow(): BrowserWindow {
   const win = new BrowserWindow({
@@ -17,6 +19,8 @@ function createWindow(): BrowserWindow {
 
 app.whenReady().then(() => {
   ipcMain.handle(CHANNELS.ping, () => 'pong');
+  registerAuthHandlers();
+  registerOllamaHandlers();
   createWindow();
 
   app.on('activate', () => {
