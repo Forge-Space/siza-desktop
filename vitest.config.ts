@@ -31,10 +31,7 @@ export default defineConfig({
       ],
       exclude: [
         'src/**/*.test.{ts,tsx}',
-        // Not yet covered — exclude until tests are added
-        'src/renderer/pages/GeneratePage.tsx',
-        'src/renderer/pages/SettingsPage.tsx',
-        'src/renderer/components/layout/AppShell.tsx',
+        // Excluded: class component with minimal logic
         'src/renderer/components/ErrorBoundary.tsx',
       ],
       thresholds: {
