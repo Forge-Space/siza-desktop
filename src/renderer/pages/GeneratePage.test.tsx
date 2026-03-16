@@ -239,4 +239,234 @@ describe('GeneratePage', () => {
     await user.click(screen.getByRole('button', { name: /copy/i }));
     expect(writeText).toHaveBeenCalledWith('export function Button() {}');
   });
+
+  it('switches active file tab when multiple files generated', async () => {
+    (mockDesktop.generate.component as ReturnType<typeof vi.fn>).mockResolvedValue({
+      files: [
+        { path: 'Button.tsx', content: 'export function Button() {}', language: 'tsx' },
+        { path: 'Button.test.tsx', content: 'describe("Button", () => {})', language: 'tsx' },
+      ],
+      error: null,
+      llmUsed: false,
+    });
+    const user = userEvent.setup();
+    render(<GeneratePage />);
+    await waitFor(() => screen.getByText(/ollama is not running/i));
+
+    await user.type(screen.getByPlaceholderText(/button, card, modal/i), 'button');
+    await user.click(screen.getByRole('button', { name: /generate/i }));
+    await waitFor(() => screen.getByText('Button.tsx'));
+
+    expect(screen.getByText('Button.test.tsx')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /Button.test.tsx/i }));
+    await waitFor(() => {
+      expect(screen.getByText('describe("Button", () => {})')).toBeInTheDocument();
+    });
+  });
+
+  it('loads entry from history panel and restores form state', async () => {
+    const user = userEvent.setup();
+    render(<GeneratePage />);
+    await waitFor(() => screen.getByText(/ollama is not running/i));
+
+    // generate first to create history entry
+    await user.type(screen.getByPlaceholderText(/button, card, modal/i), 'button');
+    await user.click(screen.getByRole('button', { name: /generate/i }));
+    await waitFor(() => screen.getByText('Button.tsx'));
+
+    // open history
+    await user.click(screen.getByText(/history \(1\)/i));
+    expect(screen.getByText('Recent generations')).toBeInTheDocument();
+
+    // click the history entry — it's a button inside the list
+    const historyList = screen.getByRole('list');
+    const historyEntry = historyList.querySelector('button');
+    expect(historyEntry).toBeTruthy();
+    await user.click(historyEntry!);
+
+    // history panel should close and form should be restored
+    await waitFor(() => {
+      expect(screen.queryByText('Recent generations')).not.toBeInTheDocument();
+    });
+    expect(screen.getByPlaceholderText(/button, card, modal/i)).toHaveValue('button');
+  });
+
+  it('clears history when clear button clicked', async () => {
+    const user = userEvent.setup();
+    render(<GeneratePage />);
+    await waitFor(() => screen.getByText(/ollama is not running/i));
+
+    await user.type(screen.getByPlaceholderText(/button, card, modal/i), 'button');
+    await user.click(screen.getByRole('button', { name: /generate/i }));
+    await waitFor(() => screen.getByText('Button.tsx'));
+
+    // open history
+    await user.click(screen.getByText(/history \(1\)/i));
+    expect(screen.getByText('Recent generations')).toBeInTheDocument();
+
+    // click clear
+    await user.click(screen.getByRole('button', { name: /clear/i }));
+    await waitFor(() => {
+      expect(screen.queryByText(/history/i)).not.toBeInTheDocument();
+    });
+  });
+
+  it('component library tabs switch selection', async () => {
+    const user = userEvent.setup();
+    render(<GeneratePage />);
+    await waitFor(() => screen.getByText(/ollama is not running/i));
+
+    const radixBtn = screen.getByRole('button', { name: /^radix$/i });
+    await user.click(radixBtn);
+    expect(radixBtn).toHaveClass('bg-primary');
+
+    const shadcnBtn = screen.getByRole('button', { name: /^shadcn$/i });
+    expect(shadcnBtn).not.toHaveClass('bg-primary');
+  });
+
+  it('formatTime shows "just now" for recent timestamps', async () => {
+    // Set up localStorage with a recent history entry to trigger formatTime
+    const recentEntry = {
+      id: 'test-id',
+      timestamp: Date.now() - 5000, // 5 seconds ago
+      componentType: 'navbar',
+      framework: 'react',
+      componentLibrary: 'shadcn',
+      useLlm: false,
+      files: [{ path: 'Navbar.tsx', content: 'export function Navbar() {}', language: 'tsx' }],
+    };
+    localStorage.setItem('siza:generation-history', JSON.stringify([recentEntry]));
+
+    const user = userEvent.setup();
+    render(<GeneratePage />);
+    await waitFor(() => screen.getByText(/ollama is not running/i));
+
+    // open history panel
+    await user.click(screen.getByText(/history \(1\)/i));
+    expect(screen.getByText('just now')).toBeInTheDocument();
+  });
+
+  it('formatTime shows "Xm ago" for entries minutes old', async () => {
+    const entry = {
+      id: 'test-id-2',
+      timestamp: Date.now() - 5 * 60_000, // 5 minutes ago
+      componentType: 'footer',
+      framework: 'vue',
+      componentLibrary: 'none',
+      useLlm: false,
+      files: [{ path: 'Footer.vue', content: '<template></template>', language: 'vue' }],
+    };
+    localStorage.setItem('siza:generation-history', JSON.stringify([entry]));
+
+    const user = userEvent.setup();
+    render(<GeneratePage />);
+    await waitFor(() => screen.getByText(/ollama is not running/i));
+
+    await user.click(screen.getByText(/history \(1\)/i));
+    expect(screen.getByText('5m ago')).toBeInTheDocument();
+  });
+
+  it('formatTime shows "Xh ago" for entries hours old', async () => {
+    const entry = {
+      id: 'test-id-3',
+      timestamp: Date.now() - 2 * 3_600_000, // 2 hours ago
+      componentType: 'sidebar',
+      framework: 'svelte',
+      componentLibrary: 'headlessui',
+      useLlm: false,
+      files: [{ path: 'Sidebar.svelte', content: '<script></script>', language: 'svelte' }],
+    };
+    localStorage.setItem('siza:generation-history', JSON.stringify([entry]));
+
+    const user = userEvent.setup();
+    render(<GeneratePage />);
+    await waitFor(() => screen.getByText(/ollama is not running/i));
+
+    await user.click(screen.getByText(/history \(1\)/i));
+    expect(screen.getByText('2h ago')).toBeInTheDocument();
+  });
+
+  it('formatTime shows locale date for entries over a day old', async () => {
+    const oldTimestamp = Date.now() - 2 * 86_400_000; // 2 days ago
+    const entry = {
+      id: 'test-id-4',
+      timestamp: oldTimestamp,
+      componentType: 'header',
+      framework: 'angular',
+      componentLibrary: 'radix',
+      useLlm: false,
+      files: [{ path: 'Header.ts', content: 'export class Header {}', language: 'ts' }],
+    };
+    localStorage.setItem('siza:generation-history', JSON.stringify([entry]));
+
+    const user = userEvent.setup();
+    render(<GeneratePage />);
+    await waitFor(() => screen.getByText(/ollama is not running/i));
+
+    await user.click(screen.getByText(/history \(1\)/i));
+    // Should show a date string (toLocaleDateString)
+    const expectedDate = new Date(oldTimestamp).toLocaleDateString();
+    expect(screen.getByText(expectedDate)).toBeInTheDocument();
+  });
+
+  it('shows LLM badge in history entry when useLlm is true with model name', async () => {
+    const llmEntry = {
+      id: 'llm-entry',
+      timestamp: Date.now() - 5000,
+      componentType: 'card',
+      framework: 'react',
+      componentLibrary: 'shadcn',
+      useLlm: true,
+      model: 'llama2',
+      files: [{ path: 'Card.tsx', content: 'export function Card() {}', language: 'tsx' }],
+    };
+    localStorage.setItem('siza:generation-history', JSON.stringify([llmEntry]));
+
+    const user = userEvent.setup();
+    render(<GeneratePage />);
+    await waitFor(() => screen.getByText(/ollama is not running/i));
+
+    await user.click(screen.getByText(/history \(1\)/i));
+    expect(screen.getByText('llama2')).toBeInTheDocument();
+  });
+
+  it('shows "LLM" fallback in history entry when useLlm is true but no model', async () => {
+    const llmEntry = {
+      id: 'llm-entry-2',
+      timestamp: Date.now() - 5000,
+      componentType: 'modal',
+      framework: 'react',
+      componentLibrary: 'shadcn',
+      useLlm: true,
+      model: undefined,
+      files: [{ path: 'Modal.tsx', content: 'export function Modal() {}', language: 'tsx' }],
+    };
+    localStorage.setItem('siza:generation-history', JSON.stringify([llmEntry]));
+
+    const user = userEvent.setup();
+    render(<GeneratePage />);
+    await waitFor(() => screen.getByText(/ollama is not running/i));
+
+    await user.click(screen.getByText(/history \(1\)/i));
+    expect(screen.getByText('LLM')).toBeInTheDocument();
+  });
+
+  it('shows LLM badge with model name when LLM was used', async () => {
+    (mockDesktop.generate.component as ReturnType<typeof vi.fn>).mockResolvedValue({
+      files: [{ path: 'Button.tsx', content: 'export function Button() {}', language: 'tsx' }],
+      error: null,
+      llmUsed: true,
+      model: 'llama2',
+    });
+    const user = userEvent.setup();
+    render(<GeneratePage />);
+    await waitFor(() => screen.getByText(/ollama is not running/i));
+
+    await user.type(screen.getByPlaceholderText(/button, card, modal/i), 'button');
+    await user.click(screen.getByRole('button', { name: /generate/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/LLM · llama2/)).toBeInTheDocument();
+    });
+  });
 });
