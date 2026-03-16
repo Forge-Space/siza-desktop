@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-03-16
+
+### Fixed
+- GeneratePage now pre-fills form state (component type, framework, library, LLM mode, model, files) when navigated from History page re-run button (was a no-op before)
+
+### Added
+- 2 new tests for GeneratePage re-run state consumption via `location.state.rerun` (205 tests total)
+- Coverage: 98.15% stmts / 91.42% branches / 99.34% funcs
+
 ## [0.8.0] - 2026-03-16
 
 ### Added
@@ -109,7 +118,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Code signing documentation (macOS notarization, Windows Authenticode)
 - App icon scaffold (`build/icon.svg`)
 
-[Unreleased]: https://github.com/Forge-Space/siza-desktop/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/Forge-Space/siza-desktop/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.5.0...v0.6.0
