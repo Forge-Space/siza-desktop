@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-03-16
+
+### Added
+- Generation History page (`/history`) with search, framework filter, file viewer, and re-run capability
+- History nav item in sidebar (History icon between Generate and Models)
+- 20 unit tests for HistoryPage (197 tests total, 19 suites)
+- Coverage: 97.34% stmts / 89.47% branches / 99.33% funcs
+
 ## [0.6.0] - 2026-03-16
 
 ### Added
@@ -92,7 +100,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Code signing documentation (macOS notarization, Windows Authenticode)
 - App icon scaffold (`build/icon.svg`)
 
-[Unreleased]: https://github.com/Forge-Space/siza-desktop/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/Forge-Space/siza-desktop/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.3.0...v0.4.0

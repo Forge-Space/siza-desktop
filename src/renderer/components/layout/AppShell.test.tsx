@@ -27,9 +27,11 @@ describe('AppShell', () => {
     expect(screen.getByText('page content')).toBeInTheDocument();
   });
 
-  it('renders nav buttons for Generate and Settings', () => {
+  it('renders nav buttons for Generate, History, Models, and Settings', () => {
     renderInRouter('/generate');
     expect(screen.getByTitle('Generate')).toBeInTheDocument();
+    expect(screen.getByTitle('History')).toBeInTheDocument();
+    expect(screen.getByTitle('Models')).toBeInTheDocument();
     expect(screen.getByTitle('Settings')).toBeInTheDocument();
   });
 

@@ -9,6 +9,7 @@ import AuthLoginPage from '../pages/AuthLoginPage';
 import OnboardingPage from '../pages/OnboardingPage';
 import UpdateBanner from '../components/UpdateBanner';
 import { ModelManagerPage } from '../pages/ModelManagerPage';
+import HistoryPage from '../pages/HistoryPage';
 
 function AppLayout() {
   return (
@@ -50,6 +51,7 @@ export default function AppRouter() {
             <Route element={<AuthGuard />}>
               <Route element={<AppLayout />}>
                 <Route path="/generate" element={<GeneratePage />} />
+                <Route path="/history" element={<HistoryPage />} />
                 <Route path="/models" element={<ModelManagerPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route path="*" element={<Navigate to="/generate" replace />} />
