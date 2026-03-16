@@ -22,6 +22,20 @@ export interface OllamaStatus {
   error: string | null;
 }
 
+export interface OllamaPullProgress {
+  status: string;
+  digest?: string;
+  total?: number;
+  completed?: number;
+  done: boolean;
+  error?: string;
+}
+
+export interface OllamaDeleteResult {
+  success: boolean;
+  error: string | null;
+}
+
 export interface GeneratedFile {
   path: string;
   content: string;
@@ -77,6 +91,9 @@ export interface DesktopBridge {
     getStatus: () => Promise<OllamaStatus>;
     setBaseUrl: (url: string) => Promise<void>;
     getBaseUrl: () => Promise<string>;
+    getModels: () => Promise<OllamaModel[]>;
+    pullModel: (name: string, onProgress: (p: OllamaPullProgress) => void) => Promise<OllamaPullProgress>;
+    deleteModel: (name: string) => Promise<OllamaDeleteResult>;
   };
   generate: {
     component: (req: GenerateComponentRequest) => Promise<GenerateComponentResult>;
@@ -105,6 +122,10 @@ export const CHANNELS = {
   ollamaGetStatus: 'ollama:get-status',
   ollamaSetBaseUrl: 'ollama:set-base-url',
   ollamaGetBaseUrl: 'ollama:get-base-url',
+  ollamaGetModels: 'ollama:get-models',
+  ollamaPullModel: 'ollama:pull-model',
+  ollamaPullProgress: 'ollama:pull-progress',
+  ollamaDeleteModel: 'ollama:delete-model',
   generateComponent: 'generate:component',
   updaterCheck: 'updater:check',
   updaterDownload: 'updater:download',

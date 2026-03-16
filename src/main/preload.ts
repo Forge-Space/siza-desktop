@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import type { DesktopBridge } from '../shared/bridge';
+import type { DesktopBridge, OllamaPullProgress } from '../shared/bridge';
 import { CHANNELS } from '../shared/bridge';
 
 const desktopBridge: DesktopBridge = {
@@ -12,7 +12,16 @@ const desktopBridge: DesktopBridge = {
   ollama: {
     getStatus: () => ipcRenderer.invoke(CHANNELS.ollamaGetStatus),
     setBaseUrl: (url) => ipcRenderer.invoke(CHANNELS.ollamaSetBaseUrl, url),
-    getBaseUrl: () => ipcRenderer.invoke(CHANNELS.ollamaGetBaseUrl)
+    getBaseUrl: () => ipcRenderer.invoke(CHANNELS.ollamaGetBaseUrl),
+    getModels: () => ipcRenderer.invoke(CHANNELS.ollamaGetModels),
+    pullModel: (name, onProgress) => {
+      const listener = (_e: Electron.IpcRendererEvent, p: OllamaPullProgress) => onProgress(p);
+      ipcRenderer.on(CHANNELS.ollamaPullProgress, listener);
+      return ipcRenderer.invoke(CHANNELS.ollamaPullModel, name).finally(() => {
+        ipcRenderer.removeListener(CHANNELS.ollamaPullProgress, listener);
+      });
+    },
+    deleteModel: (name) => ipcRenderer.invoke(CHANNELS.ollamaDeleteModel, name)
   },
   generate: {
     component: (req) => ipcRenderer.invoke(CHANNELS.generateComponent, req)

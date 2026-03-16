@@ -1,9 +1,10 @@
 import { useNavigate, useLocation } from 'react-router';
-import { Sparkles, Settings } from 'lucide-react';
+import { Sparkles, Settings, Package } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 const NAV_ITEMS = [
   { to: '/generate', icon: Sparkles, label: 'Generate' },
+  { to: '/models', icon: Package, label: 'Models' },
   { to: '/settings', icon: Settings, label: 'Settings' }
 ];
 

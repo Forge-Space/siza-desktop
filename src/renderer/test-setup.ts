@@ -10,6 +10,9 @@ const mockDesktop = {
     getStatus: vi.fn().mockResolvedValue({ healthy: false, models: [], error: null }),
     setBaseUrl: vi.fn().mockResolvedValue(undefined),
     getBaseUrl: vi.fn().mockResolvedValue('http://localhost:11434'),
+    getModels: vi.fn().mockResolvedValue([]),
+    pullModel: vi.fn().mockResolvedValue({ status: 'success', done: true }),
+    deleteModel: vi.fn().mockResolvedValue({ success: true, error: null }),
   },
   generate: {
     component: vi.fn().mockResolvedValue({ files: [], error: null }),
