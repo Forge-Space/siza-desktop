@@ -77,4 +77,20 @@ describe('AppShell', () => {
     // Logo wrapper div is in the sidebar
     expect(aside.querySelector('.bg-primary.flex')).toBeInTheDocument();
   });
+
+  it('active nav item has aria-current="page"', () => {
+    renderInRouter('/generate');
+    const generateBtn = screen.getByTitle('Generate (⌘G)');
+    expect(generateBtn).toHaveAttribute('aria-current', 'page');
+    const settingsBtn = screen.getByTitle('Settings (⌘,)');
+    expect(settingsBtn).not.toHaveAttribute('aria-current', 'page');
+  });
+
+  it('nav buttons have accessible names via aria-label', () => {
+    renderInRouter('/generate');
+    expect(screen.getByRole('button', { name: 'Generate (⌘G)' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'History (⌘H)' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Models (⌘M)' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Settings (⌘,)' })).toBeInTheDocument();
+  });
 });

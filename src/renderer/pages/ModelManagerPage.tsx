@@ -102,6 +102,7 @@ export function ModelManagerPage() {
         <div className="flex gap-2">
           <input
             type="text"
+            aria-label="Model name to pull"
             value={pullInput}
             onChange={e => setPullInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handlePull()}
@@ -134,7 +135,7 @@ export function ModelManagerPage() {
               </div>
             )}
             {pullState.progress?.error && (
-              <p className="mt-1 text-xs text-destructive">{pullState.progress.error}</p>
+              <p role="alert" className="mt-1 text-xs text-destructive">{pullState.progress.error}</p>
             )}
           </div>
         )}
@@ -149,11 +150,11 @@ export function ModelManagerPage() {
         </div>
 
         {error && (
-          <div className="px-4 py-3 text-sm text-destructive">{error}</div>
+          <div role="alert" className="px-4 py-3 text-sm text-destructive">{error}</div>
         )}
 
         {deleteError && (
-          <div className="px-4 py-3 text-sm text-destructive">{deleteError}</div>
+          <div role="alert" className="px-4 py-3 text-sm text-destructive">{deleteError}</div>
         )}
 
         {!loading && !error && models.length === 0 && (

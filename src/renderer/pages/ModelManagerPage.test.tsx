@@ -181,4 +181,24 @@ describe('ModelManagerPage', () => {
 
     expect(screen.getByText('50%')).toBeInTheDocument();
   });
+
+  it('pull input has aria-label="Model name to pull"', async () => {
+    render(<ModelManagerPage />);
+    await screen.findByText('llama3.2');
+    const input = screen.getByRole('textbox', { name: 'Model name to pull' });
+    expect(input).toBeInTheDocument();
+  });
+
+  it('pull error has role="alert" when shown', async () => {
+    vi.mocked(window.desktop.ollama.pullModel).mockRejectedValue(new Error('Disk full'));
+    render(<ModelManagerPage />);
+    await screen.findByText('llama3.2');
+    const input = screen.getByPlaceholderText(/e\.g\./i);
+    fireEvent.change(input, { target: { value: 'phi4' } });
+    const pullBtn = screen.getByRole('button', { name: /^pull$/i });
+    await act(async () => { fireEvent.click(pullBtn); });
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('Disk full');
+  });
 });

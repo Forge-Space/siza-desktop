@@ -21,27 +21,31 @@ export default function AppShell({ children }: AppShellProps) {
 
   return (
     <div className="flex h-screen bg-background text-foreground">
-      <aside className="w-14 flex flex-col items-center py-4 border-r border-border gap-2">
-        <div className="mb-4">
+      <aside aria-label="Main navigation" className="w-14 flex flex-col items-center py-4 border-r border-border gap-2">
+        <div className="mb-4" aria-hidden="true">
           <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-primary-foreground" />
+            <Sparkles className="w-4 h-4 text-primary-foreground" aria-hidden="true" />
           </div>
         </div>
-        {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
-          <button
-            key={to}
-            onClick={() => navigate(to)}
-            title={`${label} (${SHORTCUT_LABELS[to]})`}
-            className={cn(
-              'w-10 h-10 flex items-center justify-center rounded-md transition-colors',
-              pathname === to
-                ? 'bg-primary text-primary-foreground'
-                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-            )}
-          >
-            <Icon className="w-5 h-5" />
-          </button>
-        ))}
+        <nav aria-label="App navigation">
+          {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
+            <button
+              key={to}
+              onClick={() => navigate(to)}
+              title={`${label} (${SHORTCUT_LABELS[to]})`}
+              aria-label={`${label} (${SHORTCUT_LABELS[to]})`}
+              aria-current={pathname === to ? 'page' : undefined}
+              className={cn(
+                'w-10 h-10 flex items-center justify-center rounded-md transition-colors',
+                pathname === to
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              )}
+            >
+              <Icon className="w-5 h-5" aria-hidden="true" />
+            </button>
+          ))}
+        </nav>
       </aside>
       <main className="flex-1 overflow-auto p-6">{children}</main>
     </div>

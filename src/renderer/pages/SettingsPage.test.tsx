@@ -110,4 +110,29 @@ describe('SettingsPage', () => {
     expect(btn).toHaveTextContent('Signing out…');
     resolveSignOut();
   });
+
+  it('saved status message has role="status"', async () => {
+    const user = userEvent.setup();
+    render(<SettingsPage />);
+    await waitFor(() => screen.getByDisplayValue('http://localhost:11434'));
+
+    await user.click(screen.getByRole('button', { name: /save/i }));
+
+    const statusMsg = document.querySelector('[role="status"]');
+    expect(statusMsg).toBeInTheDocument();
+  });
+
+  it('sign-out button has aria-busy when signing out', async () => {
+    const user = userEvent.setup();
+    let resolveSignOut!: () => void;
+    mockSignOut.mockReturnValue(new Promise<void>(res => { resolveSignOut = res; }));
+
+    render(<SettingsPage />);
+
+    const btn = screen.getByRole('button', { name: /sign out/i });
+    await user.click(btn);
+
+    expect(btn).toHaveAttribute('aria-busy', 'true');
+    resolveSignOut();
+  });
 });

@@ -24,6 +24,7 @@ function EntryCard({ entry, onRerun, onSelect, selected }: {
     <div
       role="button"
       tabIndex={0}
+      aria-label={entry.componentType || '(unnamed)'}
       onClick={() => onSelect(entry)}
       onKeyDown={(e) => e.key === 'Enter' && onSelect(entry)}
       className={cn(
@@ -60,6 +61,7 @@ function EntryCard({ entry, onRerun, onSelect, selected }: {
           <button
             onClick={(e) => { e.stopPropagation(); onRerun(entry); }}
             title="Re-run"
+            aria-label="Re-run this component"
             className="ml-1 p-1.5 rounded hover:bg-primary hover:text-primary-foreground transition-colors"
           >
             <RefreshCw className="w-3.5 h-3.5" />
@@ -140,6 +142,7 @@ export default function HistoryPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
+            aria-label="Search history"
             placeholder="Search by component, framework..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -158,6 +161,7 @@ export default function HistoryPage() {
           <Filter className="w-4 h-4 text-muted-foreground shrink-0" />
           <select
             value={framework}
+            aria-label="Filter by framework"
             onChange={(e) => setFramework(e.target.value as typeof FRAMEWORKS[number])}
             className="text-sm bg-transparent py-2 focus:outline-none capitalize"
           >
@@ -180,7 +184,7 @@ export default function HistoryPage() {
         </div>
       ) : (
         <div className="flex gap-4 flex-1 min-h-0">
-          <div className="w-72 shrink-0 flex flex-col gap-2 overflow-y-auto">
+          <div role="list" aria-label="Generation history" className="w-72 shrink-0 flex flex-col gap-2 overflow-y-auto">
             {filtered.map((entry) => (
               <EntryCard
                 key={entry.id}
@@ -212,13 +216,14 @@ export default function HistoryPage() {
                   ))}
                   <button
                     onClick={() => handleRerun(selectedEntry)}
+                    aria-label="Re-run this generation"
                     className="ml-auto flex items-center gap-1.5 px-3 py-1 rounded-md text-xs bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
                   >
                     <RefreshCw className="w-3 h-3" />
                     Re-run
                   </button>
                 </div>
-                <pre className="flex-1 overflow-auto rounded-lg bg-muted p-4 text-xs font-mono text-foreground">
+                <pre aria-label="File code content" className="flex-1 overflow-auto rounded-lg bg-muted p-4 text-xs font-mono text-foreground">
                   <code>{selectedEntry.files[activeFile]?.content ?? ''}</code>
                 </pre>
               </>

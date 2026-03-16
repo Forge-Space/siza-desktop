@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-03-16
+
+### Added
+- Accessibility (ARIA): navigation landmarks, aria-current, aria-pressed, role=tablist/tab, role=alert, role=status, aria-label across all pages (AppShell, AuthLoginPage, SettingsPage, GeneratePage, HistoryPage, ModelManagerPage)
+- 251 tests total (21 suites); all coverage thresholds maintained
+
 ## [1.2.0] - 2026-03-16
 
 ### Added

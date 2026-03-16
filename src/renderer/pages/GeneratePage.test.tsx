@@ -279,7 +279,7 @@ describe('GeneratePage', () => {
     await waitFor(() => screen.getByText('Button.tsx'));
 
     expect(screen.getByText('Button.test.tsx')).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: /Button.test.tsx/i }));
+    await user.click(screen.getByRole('tab', { name: /Button.test.tsx/i }));
     await waitFor(() => {
       expect(screen.getByText('describe("Button", () => {})')).toBeInTheDocument();
     });
@@ -651,5 +651,59 @@ describe('GeneratePage', () => {
     await waitFor(() => {
       expect((screen.getByPlaceholderText(/button, card, modal/i) as HTMLInputElement).value).toBe('Modal');
     });
+  });
+
+  it('error message has role="alert" when generation fails', async () => {
+    (mockDesktop.generate.component as ReturnType<typeof vi.fn>).mockResolvedValue({
+      files: [],
+      error: 'Generation failed',
+    });
+    const user = userEvent.setup();
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
+    await waitFor(() => screen.getByText(/ollama is not running/i));
+
+    await user.type(screen.getByPlaceholderText(/button, card, modal/i), 'card');
+    await user.click(screen.getByRole('button', { name: /generate/i }));
+
+    await waitFor(() => {
+      const alerts = screen.getAllByRole('alert');
+      const errorAlert = alerts.find(el => el.textContent?.includes('Generation failed'));
+      expect(errorAlert).toBeDefined();
+      expect(errorAlert).toHaveTextContent('Generation failed');
+    });
+  });
+
+  it('framework buttons have aria-pressed attribute', async () => {
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
+    await waitFor(() => screen.getByText(/ollama is not running/i));
+
+    const reactBtn = screen.getByRole('button', { name: /^react$/i });
+    expect(reactBtn).toHaveAttribute('aria-pressed', 'true');
+
+    const vueBtn = screen.getByRole('button', { name: /^vue$/i });
+    expect(vueBtn).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('LLM mode toggle has aria-pressed', async () => {
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
+    await waitFor(() => screen.getByText(/ollama is not running/i));
+
+    const llmBtn = screen.getByRole('button', { name: /llm mode/i });
+    expect(llmBtn).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('file tab buttons have role="tab" after generation', async () => {
+    const user = userEvent.setup();
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
+    await waitFor(() => screen.getByText(/ollama is not running/i));
+
+    await user.type(screen.getByPlaceholderText(/button, card, modal/i), 'button');
+    await user.click(screen.getByRole('button', { name: /generate/i }));
+
+    await waitFor(() => screen.getByText('Button.tsx'));
+
+    const tabBtn = screen.getByRole('tab', { name: /Button\.tsx/i });
+    expect(tabBtn).toBeInTheDocument();
+    expect(tabBtn).toHaveAttribute('aria-selected', 'true');
   });
 });

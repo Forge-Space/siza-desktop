@@ -30,8 +30,8 @@ export default function AuthLoginPage() {
     <div className="h-screen flex items-center justify-center bg-background">
       <div className="w-full max-w-sm space-y-6 px-4">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
-            <Sparkles className="w-6 h-6 text-primary-foreground" />
+          <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center" aria-hidden="true">
+            <Sparkles className="w-6 h-6 text-primary-foreground" aria-hidden="true" />
           </div>
           <div className="text-center">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">Siza Desktop</h1>
@@ -39,7 +39,7 @@ export default function AuthLoginPage() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" aria-label="Sign in">
           <div className="space-y-1">
             <label htmlFor="email" className="text-sm font-medium text-foreground">Email</label>
             <input
@@ -81,12 +81,13 @@ export default function AuthLoginPage() {
           </div>
 
           {error && (
-            <p className="text-sm text-destructive">{error}</p>
+            <p role="alert" className="text-sm text-destructive">{error}</p>
           )}
 
           <button
             type="submit"
             disabled={loading}
+            aria-busy={loading}
             className={cn(
               'w-full rounded-md bg-primary text-primary-foreground font-medium py-2 text-sm',
               'hover:bg-primary/90 transition-colors',

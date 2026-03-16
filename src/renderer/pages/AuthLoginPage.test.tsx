@@ -121,4 +121,38 @@ describe('AuthLoginPage', () => {
     });
     expect(mockNavigate).not.toHaveBeenCalled();
   });
+
+  it('error message has role="alert"', async () => {
+    const user = userEvent.setup();
+    mockSignIn.mockResolvedValue('Invalid credentials');
+    renderPage();
+
+    await user.type(screen.getByLabelText(/Email/i), 'bad@example.com');
+    await user.type(screen.getByLabelText(/Password/i), 'wrong');
+    await user.click(screen.getByRole('button', { name: /Sign in/i }));
+
+    await waitFor(() => {
+      const alert = screen.getByRole('alert');
+      expect(alert).toBeInTheDocument();
+      expect(alert).toHaveTextContent('Invalid credentials');
+    });
+  });
+
+  it('submit button has aria-busy when loading', async () => {
+    const user = userEvent.setup();
+    let resolve: (v: string | null) => void;
+    mockSignIn.mockReturnValue(new Promise(r => { resolve = r; }));
+    renderPage();
+
+    await user.type(screen.getByLabelText(/Email/i), 'user@example.com');
+    await user.type(screen.getByLabelText(/Password/i), 'secret');
+    await user.click(screen.getByRole('button', { name: /Sign in/i }));
+
+    await waitFor(() => {
+      const btn = screen.getByRole('button', { name: /Signing in/i });
+      expect(btn).toHaveAttribute('aria-busy', 'true');
+    });
+
+    resolve!(null);
+  });
 });

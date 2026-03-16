@@ -308,4 +308,20 @@ describe('HistoryPage', () => {
     const codeBlock = document.querySelector('pre code');
     expect(codeBlock).toBeDefined();
   });
+
+  it('search input has aria-label="Search history"', () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([mockEntry]));
+    renderInRouter();
+
+    const searchInput = screen.getByRole('textbox', { name: 'Search history' });
+    expect(searchInput).toBeInTheDocument();
+  });
+
+  it('framework select has aria-label="Filter by framework"', () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([mockEntry]));
+    renderInRouter();
+
+    const frameworkSelect = screen.getByRole('combobox', { name: 'Filter by framework' });
+    expect(frameworkSelect).toBeInTheDocument();
+  });
 });

@@ -227,7 +227,7 @@ export default function GeneratePage() {
       )}
 
       {ollamaHealthy === false && (
-        <div className="flex items-center gap-2 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+        <div role="alert" className="flex items-center gap-2 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
           <AlertCircle className="w-4 h-4 shrink-0" />
           Ollama is not running. Template generation still works — start Ollama to enable LLM mode.
         </div>
@@ -237,12 +237,13 @@ export default function GeneratePage() {
         <div className="flex gap-3 flex-wrap">
           <div className="space-y-1">
             <label className="text-sm font-medium text-foreground">Framework</label>
-            <div className="flex gap-1">
+            <div role="group" aria-label="Framework" className="flex gap-1">
               {FRAMEWORKS.map(f => (
                 <button
                   key={f}
                   type="button"
                   onClick={() => setFramework(f)}
+                  aria-pressed={framework === f}
                   className={cn(
                     'px-3 py-1.5 rounded-md text-sm font-medium transition-colors capitalize',
                     framework === f
@@ -258,12 +259,13 @@ export default function GeneratePage() {
 
           <div className="space-y-1">
             <label className="text-sm font-medium text-foreground">Component library</label>
-            <div className="flex gap-1">
+            <div role="group" aria-label="Component library" className="flex gap-1">
               {COMPONENT_LIBRARIES.map(lib => (
                 <button
                   key={lib}
                   type="button"
                   onClick={() => setComponentLibrary(lib)}
+                  aria-pressed={componentLibrary === lib}
                   className={cn(
                     'px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
                     componentLibrary === lib
@@ -302,6 +304,7 @@ export default function GeneratePage() {
             type="button"
             onClick={() => setUseLlm(v => !v)}
             disabled={!ollamaHealthy}
+            aria-pressed={useLlm && !!ollamaHealthy}
             className={cn(
               'flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
               useLlm && ollamaHealthy
@@ -350,17 +353,19 @@ export default function GeneratePage() {
       </form>
 
       {error && (
-        <p className="text-sm text-destructive">{error}</p>
+        <p role="alert" className="text-sm text-destructive">{error}</p>
       )}
 
       {files.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <div className="flex gap-1 flex-wrap">
+            <div role="tablist" aria-label="Generated files" className="flex gap-1 flex-wrap">
               {files.map((file, i) => (
                 <button
                   key={file.path}
                   type="button"
+                  role="tab"
+                  aria-selected={activeFile === i}
                   onClick={() => setActiveFile(i)}
                   className={cn(
                     'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-mono transition-colors',
@@ -417,7 +422,7 @@ export default function GeneratePage() {
           {showPreview ? (
             <PreviewPanel files={files} framework={framework} />
           ) : (
-            <pre className={cn(
+            <pre aria-label="Generated code" className={cn(
               'rounded-md border border-border bg-muted p-4 text-sm font-mono',
               'overflow-auto max-h-[480px] whitespace-pre text-foreground'
             )}>
@@ -425,7 +430,7 @@ export default function GeneratePage() {
             </pre>
           )}
           {saveError && (
-            <p className="text-xs text-destructive mt-1">{saveError}</p>
+            <p role="alert" className="text-xs text-destructive mt-1">{saveError}</p>
           )}
           {savedTo && (
             <p className="text-xs text-muted-foreground mt-1 font-mono truncate">

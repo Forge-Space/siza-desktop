@@ -31,10 +31,12 @@ export default function SettingsPage() {
         <p className="text-sm text-muted-foreground mt-1">Configure Siza Desktop</p>
       </div>
 
-      <section className="space-y-4">
-        <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider">Ollama</h2>
-        <form onSubmit={handleSaveUrl} className="flex gap-2">
+      <section className="space-y-4" aria-labelledby="ollama-heading">
+        <h2 id="ollama-heading" className="text-sm font-semibold text-foreground uppercase tracking-wider">Ollama</h2>
+        <form onSubmit={handleSaveUrl} className="flex gap-2" aria-label="Ollama URL settings">
+          <label htmlFor="ollama-url" className="sr-only">Ollama base URL</label>
           <input
+            id="ollama-url"
             type="url"
             value={ollamaUrl}
             onChange={e => setOllamaUrl(e.target.value)}
@@ -51,16 +53,20 @@ export default function SettingsPage() {
             {saved ? 'Saved!' : 'Save'}
           </button>
         </form>
+        {saved && (
+          <p role="status" className="sr-only">Ollama URL saved successfully</p>
+        )}
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider">Account</h2>
+      <section className="space-y-4" aria-labelledby="account-heading">
+        <h2 id="account-heading" className="text-sm font-semibold text-foreground uppercase tracking-wider">Account</h2>
         {session && (
           <p className="text-sm text-muted-foreground">Signed in as <span className="text-foreground">{session.email}</span></p>
         )}
         <button
           onClick={handleSignOut}
           disabled={signingOut}
+          aria-busy={signingOut}
           className={cn(
             'rounded-md border border-destructive text-destructive text-sm font-medium px-4 py-2',
             'hover:bg-destructive hover:text-destructive-foreground transition-colors',
