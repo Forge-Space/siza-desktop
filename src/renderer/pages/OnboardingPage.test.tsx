@@ -146,6 +146,58 @@ describe('OnboardingPage', () => {
     });
   });
 
+  it('changing the URL input updates state and resets status to idle', async () => {
+    const user = userEvent.setup();
+    vi.mocked(window.desktop.ollama.getStatus).mockResolvedValue({
+      healthy: true,
+      models: [],
+      error: null,
+    });
+
+    renderPage();
+    await user.click(screen.getByRole('button', { name: /Get started/i }));
+
+    // Test once to set status to something other than idle
+    await user.click(screen.getByRole('button', { name: /Test connection/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/Ollama is reachable/i)).toBeInTheDocument();
+    });
+
+    // Now change the URL — this should reset ollamaStatus to 'idle'
+    const urlInput = screen.getByRole('textbox');
+    await user.clear(urlInput);
+    await user.type(urlInput, 'http://localhost:9999');
+
+    // After changing, success message should be gone (status reset to idle)
+    expect(screen.queryByText(/Ollama is reachable/i)).not.toBeInTheDocument();
+  });
+
+  it('Back button on auth step returns to ollama step', async () => {
+    const user = userEvent.setup();
+    vi.mocked(window.desktop.ollama.getStatus).mockResolvedValue({
+      healthy: true,
+      models: [],
+      error: null,
+    });
+
+    renderPage();
+
+    // Navigate to ollama step
+    await user.click(screen.getByRole('button', { name: /Get started/i }));
+    // Test connection to enable Continue
+    await user.click(screen.getByRole('button', { name: /Test connection/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/Ollama is reachable/i)).toBeInTheDocument();
+    });
+    // Navigate to auth step
+    await user.click(screen.getByRole('button', { name: /Continue/i }));
+    expect(screen.getByRole('button', { name: /Sign in/i })).toBeInTheDocument();
+
+    // Click Back on auth step → should go back to ollama step
+    await user.click(screen.getByRole('button', { name: /Back/i }));
+    expect(screen.getByRole('button', { name: /Test connection/i })).toBeInTheDocument();
+  });
+
   it('Back button on ollama step returns to welcome', async () => {
     const user = userEvent.setup();
     renderPage();

@@ -91,6 +91,28 @@ describe('ModelManagerPage', () => {
     expect(pullBtn).toBeDisabled();
   });
 
+  it('shows pull error when pullModel throws', async () => {
+    vi.mocked(window.desktop.ollama.pullModel).mockRejectedValue(new Error('Disk full'));
+    render(<ModelManagerPage />);
+    await screen.findByText('llama3.2');
+    const input = screen.getByPlaceholderText(/e\.g\./i);
+    fireEvent.change(input, { target: { value: 'phi4' } });
+    const pullBtn = screen.getByRole('button', { name: /^pull$/i });
+    await act(async () => { fireEvent.click(pullBtn); });
+    expect(await screen.findByText('Disk full')).toBeInTheDocument();
+  });
+
+  it('pulls a model when Enter key is pressed in input', async () => {
+    render(<ModelManagerPage />);
+    await screen.findByText('llama3.2');
+    const input = screen.getByPlaceholderText(/e\.g\./i);
+    fireEvent.change(input, { target: { value: 'gemma3' } });
+    await act(async () => { fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' }); });
+    await waitFor(() => {
+      expect(window.desktop.ollama.pullModel).toHaveBeenCalledWith('gemma3', expect.any(Function));
+    });
+  });
+
   it('shows pull progress bar when pulling', async () => {
     let progressCallback: ((p: { status: string; total: number; completed: number; done: boolean }) => void) | null = null;
     vi.mocked(window.desktop.ollama.pullModel).mockImplementation((_name, onProgress) => {
