@@ -22,6 +22,24 @@ export interface OllamaStatus {
   error: string | null;
 }
 
+export interface GeneratedFile {
+  path: string;
+  content: string;
+  encoding?: 'utf-8' | 'base64';
+}
+
+export interface GenerateComponentRequest {
+  framework: string;
+  componentType: string;
+  props?: Record<string, unknown>;
+  componentLibrary?: string;
+}
+
+export interface GenerateComponentResult {
+  files: GeneratedFile[];
+  error: string | null;
+}
+
 export interface DesktopBridge {
   ping: () => Promise<string>;
   auth: {
@@ -34,6 +52,9 @@ export interface DesktopBridge {
     setBaseUrl: (url: string) => Promise<void>;
     getBaseUrl: () => Promise<string>;
   };
+  generate: {
+    component: (req: GenerateComponentRequest) => Promise<GenerateComponentResult>;
+  };
 }
 
 export const CHANNELS = {
@@ -43,7 +64,8 @@ export const CHANNELS = {
   authGetSession: 'auth:get-session',
   ollamaGetStatus: 'ollama:get-status',
   ollamaSetBaseUrl: 'ollama:set-base-url',
-  ollamaGetBaseUrl: 'ollama:get-base-url'
+  ollamaGetBaseUrl: 'ollama:get-base-url',
+  generateComponent: 'generate:component'
 } as const;
 
 export function normalizePing(value: unknown): string {

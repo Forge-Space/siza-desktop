@@ -13,6 +13,9 @@ const desktopBridge: DesktopBridge = {
     getStatus: () => ipcRenderer.invoke(CHANNELS.ollamaGetStatus),
     setBaseUrl: (url) => ipcRenderer.invoke(CHANNELS.ollamaSetBaseUrl, url),
     getBaseUrl: () => ipcRenderer.invoke(CHANNELS.ollamaGetBaseUrl)
+  },
+  generate: {
+    component: (req) => ipcRenderer.invoke(CHANNELS.generateComponent, req)
   }
 };
 

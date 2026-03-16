@@ -1,18 +1,22 @@
 import { useEffect, useState } from 'react';
-import { Sparkles, Copy, Check, AlertCircle } from 'lucide-react';
-import type { OllamaModel } from '../../shared/bridge';
+import { Sparkles, Copy, Check, AlertCircle, FileCode } from 'lucide-react';
+import type { OllamaModel, GeneratedFile } from '../../shared/bridge';
 import { cn } from '../lib/utils';
 
 const FRAMEWORKS = ['react', 'vue', 'svelte', 'angular'] as const;
 type Framework = typeof FRAMEWORKS[number];
 
+const COMPONENT_LIBRARIES = ['shadcn', 'radix', 'headlessui', 'none'] as const;
+type ComponentLibrary = typeof COMPONENT_LIBRARIES[number];
+
 export default function GeneratePage() {
-  const [prompt, setPrompt] = useState('');
+  const [componentType, setComponentType] = useState('');
   const [framework, setFramework] = useState<Framework>('react');
+  const [componentLibrary, setComponentLibrary] = useState<ComponentLibrary>('shadcn');
   const [models, setModels] = useState<OllamaModel[]>([]);
-  const [selectedModel, setSelectedModel] = useState('');
   const [ollamaHealthy, setOllamaHealthy] = useState<boolean | null>(null);
-  const [output, setOutput] = useState('');
+  const [files, setFiles] = useState<GeneratedFile[]>([]);
+  const [activeFile, setActiveFile] = useState(0);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -22,30 +26,25 @@ export default function GeneratePage() {
       setOllamaHealthy(status.healthy);
       if (status.healthy && status.models.length > 0) {
         setModels(status.models);
-        setSelectedModel(status.models[0].name);
       }
     });
   }, []);
 
   async function handleGenerate(e: React.FormEvent) {
     e.preventDefault();
-    if (!prompt.trim() || !selectedModel) return;
+    if (!componentType.trim()) return;
     setError(null);
-    setOutput('');
+    setFiles([]);
+    setActiveFile(0);
     setLoading(true);
     try {
-      const res = await fetch(`${await window.desktop.ollama.getBaseUrl()}/api/generate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: selectedModel,
-          prompt: `Generate a ${framework} component: ${prompt.trim()}. Return only the code, no explanation.`,
-          stream: false
-        })
+      const result = await window.desktop.generate.component({
+        framework,
+        componentType: componentType.trim(),
+        componentLibrary
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json() as { response: string };
-      setOutput(data.response);
+      if (result.error) throw new Error(result.error);
+      setFiles(result.files);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Generation failed');
     } finally {
@@ -54,7 +53,8 @@ export default function GeneratePage() {
   }
 
   async function handleCopy() {
-    await navigator.clipboard.writeText(output);
+    const content = files[activeFile]?.content ?? '';
+    await navigator.clipboard.writeText(content);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
@@ -63,19 +63,21 @@ export default function GeneratePage() {
     <div className="max-w-3xl space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Generate</h1>
-        <p className="text-sm text-muted-foreground mt-1">AI-powered component generation via Ollama</p>
+        <p className="text-sm text-muted-foreground mt-1">
+          AI-powered component generation via siza-gen
+        </p>
       </div>
 
-      {ollamaHealthy === false && (
+      {ollamaHealthy === false && models.length === 0 && (
         <div className="flex items-center gap-2 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
           <AlertCircle className="w-4 h-4 shrink-0" />
-          Ollama is not running. Start it with <code className="font-mono">ollama serve</code> or update the URL in Settings.
+          Ollama is not running. Template generation still works — start Ollama for LLM-enhanced output.
         </div>
       )}
 
       <form onSubmit={handleGenerate} className="space-y-4">
-        <div className="flex gap-3">
-          <div className="flex-1 space-y-1">
+        <div className="flex gap-3 flex-wrap">
+          <div className="space-y-1">
             <label className="text-sm font-medium text-foreground">Framework</label>
             <div className="flex gap-1">
               {FRAMEWORKS.map(f => (
@@ -96,46 +98,50 @@ export default function GeneratePage() {
             </div>
           </div>
 
-          {models.length > 0 && (
-            <div className="space-y-1">
-              <label htmlFor="model" className="text-sm font-medium text-foreground">Model</label>
-              <select
-                id="model"
-                value={selectedModel}
-                onChange={e => setSelectedModel(e.target.value)}
-                className={cn(
-                  'rounded-md border border-input bg-background px-3 py-1.5 text-sm text-foreground',
-                  'focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent'
-                )}
-              >
-                {models.map(m => (
-                  <option key={m.name} value={m.name}>{m.name}</option>
-                ))}
-              </select>
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-foreground">Component library</label>
+            <div className="flex gap-1">
+              {COMPONENT_LIBRARIES.map(lib => (
+                <button
+                  key={lib}
+                  type="button"
+                  onClick={() => setComponentLibrary(lib)}
+                  className={cn(
+                    'px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
+                    componentLibrary === lib
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  {lib}
+                </button>
+              ))}
             </div>
-          )}
+          </div>
         </div>
 
         <div className="space-y-1">
-          <label htmlFor="prompt" className="text-sm font-medium text-foreground">Component description</label>
-          <textarea
-            id="prompt"
-            rows={3}
-            value={prompt}
-            onChange={e => setPrompt(e.target.value)}
+          <label htmlFor="componentType" className="text-sm font-medium text-foreground">
+            Component type
+          </label>
+          <input
+            id="componentType"
+            type="text"
+            value={componentType}
+            onChange={e => setComponentType(e.target.value)}
             className={cn(
-              'w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground resize-none',
+              'w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground',
               'placeholder:text-muted-foreground',
               'focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent'
             )}
-            placeholder="A button component with variants: primary, secondary, destructive"
+            placeholder="button, card, modal, form, navbar…"
             disabled={loading}
           />
         </div>
 
         <button
           type="submit"
-          disabled={loading || !ollamaHealthy || !selectedModel || !prompt.trim()}
+          disabled={loading || !componentType.trim()}
           className={cn(
             'flex items-center gap-2 rounded-md bg-primary text-primary-foreground font-medium px-4 py-2 text-sm',
             'hover:bg-primary/90 transition-colors',
@@ -151,11 +157,29 @@ export default function GeneratePage() {
         <p className="text-sm text-destructive">{error}</p>
       )}
 
-      {output && (
-        <div className="relative">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-foreground">Output</span>
+      {files.length > 0 && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex gap-1 flex-wrap">
+              {files.map((file, i) => (
+                <button
+                  key={file.path}
+                  type="button"
+                  onClick={() => setActiveFile(i)}
+                  className={cn(
+                    'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-mono transition-colors',
+                    activeFile === i
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  <FileCode className="w-3 h-3" />
+                  {file.path.split('/').pop()}
+                </button>
+              ))}
+            </div>
             <button
+              type="button"
               onClick={handleCopy}
               className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
@@ -165,9 +189,9 @@ export default function GeneratePage() {
           </div>
           <pre className={cn(
             'rounded-md border border-border bg-muted p-4 text-sm font-mono',
-            'overflow-auto max-h-96 whitespace-pre-wrap text-foreground'
+            'overflow-auto max-h-[480px] whitespace-pre text-foreground'
           )}>
-            {output}
+            {files[activeFile]?.content}
           </pre>
         </div>
       )}
