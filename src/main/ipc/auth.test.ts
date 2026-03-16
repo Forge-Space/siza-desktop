@@ -132,4 +132,25 @@ describe('registerAuthHandlers', () => {
     await handlers.get(CHANNELS.authSignOut)!(null);
     expect(mockSignOut).not.toHaveBeenCalled();
   });
+
+  it('getSession returns null when decrypted data is empty string', async () => {
+    mockReadFileSync.mockReturnValue(Buffer.from(''));
+    vi.resetModules();
+    const mod = await import('./auth');
+    mod.registerAuthHandlers();
+    const result = handlers.get(CHANNELS.authGetSession)!(null);
+    expect(result).toBeNull();
+  });
+
+  it('signIn handles missing email in user object (defaults to empty string)', async () => {
+    const sessionNoEmail = {
+      access_token: 'tok',
+      refresh_token: 'ref',
+      user: { id: 'user-456' }
+    };
+    mockSignInWithPassword.mockResolvedValue({ data: { session: sessionNoEmail }, error: null });
+    const result = await (handlers.get(CHANNELS.authSignIn)!(null, 'nomail@example.com', 'pass') as Promise<SignInResult>);
+    expect(result.error).toBeNull();
+    expect(result.session?.email).toBe('');
+  });
 });

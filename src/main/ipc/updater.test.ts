@@ -124,4 +124,11 @@ describe('registerUpdaterHandlers', () => {
     expect(status.state).toBe('error');
     expect(status.error).toBe('Something went wrong');
   });
+
+  it('download returns generic error when non-Error thrown', async () => {
+    mockDownloadUpdate.mockRejectedValue('string error');
+    const status = await handlers.get('updater:download')!(null) as { state: string; error?: string };
+    expect(status.state).toBe('error');
+    expect(status.error).toBe('Download failed');
+  });
 });

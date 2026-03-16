@@ -132,4 +132,26 @@ describe('registerGenerateHandlers', () => {
     expect(result.llmUsed).toBe(false);
     expect(result.error).toBe('model not loaded');
   });
+
+  it('fileExtension returns .vue for vue framework', async () => {
+    const req: GenerateComponentRequest = {
+      framework: 'vue',
+      componentType: 'Button',
+      useLlm: true,
+      model: 'llama3.2',
+    };
+    const result = await handlers.get(CHANNELS.generateComponent)!(null, req) as { files: { path: string }[] };
+    expect(result.files[0].path).toBe('Button.vue');
+  });
+
+  it('fileExtension returns .svelte for svelte framework', async () => {
+    const req: GenerateComponentRequest = {
+      framework: 'svelte',
+      componentType: 'Card',
+      useLlm: true,
+      model: 'llama3.2',
+    };
+    const result = await handlers.get(CHANNELS.generateComponent)!(null, req) as { files: { path: string }[] };
+    expect(result.files[0].path).toBe('Card.svelte');
+  });
 });
