@@ -1,16 +1,7 @@
 import { ipcMain, dialog, app } from 'electron';
 import { writeFile, mkdir } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
-
-export interface SaveFilesRequest {
-  files: Array<{ path: string; content: string }>;
-  defaultDir?: string;
-}
-
-export interface SaveFilesResult {
-  savedTo: string | null;
-  error: string | null;
-}
+import type { SaveFilesRequest, SaveFilesResult } from '../../shared/bridge';
 
 export function registerFilesHandlers(): void {
   ipcMain.handle('files:save-generated', async (_event, req: SaveFilesRequest): Promise<SaveFilesResult> => {

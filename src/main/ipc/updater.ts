@@ -1,12 +1,6 @@
 import { ipcMain } from 'electron';
 import { autoUpdater, UpdateInfo } from 'electron-updater';
-
-export interface UpdateStatus {
-  state: 'idle' | 'checking' | 'available' | 'not-available' | 'downloading' | 'ready' | 'error';
-  version?: string;
-  percent?: number;
-  error?: string;
-}
+import type { UpdateStatus } from '../../shared/bridge';
 
 let currentStatus: UpdateStatus = { state: 'idle' };
 

@@ -15,13 +15,13 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "vite build && playwright test",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "knip": "knip"
   },
   "dependencies": {
     "@forgespace/siza-gen": "^0.13.0",
     "@supabase/supabase-js": "^2.99.1",
     "@tailwindcss/vite": "^4.2.1",
-    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "electron-updater": "^6.8.3",
     "lucide-react": "^0.577.0",
@@ -83,6 +83,9 @@
   "devDependencies": {
     "@eslint/js": "^9.18.0",
     "@playwright/test": "^1.58.2",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^22.10.2",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
@@ -92,6 +95,8 @@
     "electron-builder": "^26.8.1",
     "eslint": "^9.18.0",
     "globals": "^15.14.0",
+    "jsdom": "^29.0.0",
+    "knip": "^5.86.0",
     "playwright": "^1.58.2",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.20.0",
