@@ -7,9 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-03-16
+
 ### Added
-- Improved test coverage: ModelManagerPage pull error path, Enter key trigger, OnboardingPage URL input change and auth-step back button
-- 174 tests total (18 suites); coverage: 97.52% stmts / 89.59% branches / 97.7% funcs
+- Improved test coverage: SettingsPage setTimeout reset (100% funcs), GeneratePage model select onChange, ModelManagerPage delete error fallback, OnboardingPage URL input and auth back button
+- 177 tests total (18 suites); coverage: 97.93% stmts / 89.93% branches / 99.23% funcs
+- globals 15→17 dependency upgrade
 
 ## [0.5.0] - 2026-03-16
 
@@ -89,7 +92,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Code signing documentation (macOS notarization, Windows Authenticode)
 - App icon scaffold (`build/icon.svg`)
 
-[Unreleased]: https://github.com/Forge-Space/siza-desktop/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/Forge-Space/siza-desktop/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.2.0...v0.3.0
