@@ -7,12 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-03-16
+
 ### Added
 - Knip dead code detection with CI enforcement
 - Dependabot for automated dependency and GitHub Actions updates
-- Renderer unit tests: `useGenerationHistory`, `UpdateBanner`, `AuthLoginPage`, `OnboardingPage` (90 tests total)
+- Renderer unit tests: `useGenerationHistory`, `UpdateBanner`, `AuthLoginPage`, `OnboardingPage`, `GeneratePage`, `SettingsPage`, `AppShell` (122 tests total)
 - Coverage enforcement via `@vitest/coverage-v8` (≥80% lines/funcs/stmts, ≥70% branches)
 - `siza-desktop` developer skill for workflow automation
+
+### Changed
+- Upgraded all GitHub Actions to latest: checkout@v6, setup-node@v6, upload-artifact@v7, download-artifact@v8, codeql-action@v4
+- Upgraded electron to v41, @types/node to v25, vitest and testing-library to latest
+- Removed unused `class-variance-authority` dependency
+- Fixed duplicate type exports: `UpdateStatus`, `SaveFilesRequest`, `SaveFilesResult` now sourced from `bridge.ts`
 
 ## [0.1.0] - 2025-03-15
 
