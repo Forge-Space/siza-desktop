@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router';
 import { Sparkles, Copy, Check, AlertCircle, FileCode, Zap, Download, History, Trash2 } from 'lucide-react';
 import type { OllamaModel, GeneratedFile } from '../../shared/bridge';
 import { cn } from '../lib/utils';
@@ -32,6 +33,23 @@ export default function GeneratePage() {
   const [showHistory, setShowHistory] = useState(false);
 
   const { history, addEntry, clearHistory } = useGenerationHistory();
+  const location = useLocation();
+
+  useEffect(() => {
+    const rerun = (location.state as { rerun?: HistoryEntry })?.rerun;
+    if (!rerun) return;
+    setComponentType(rerun.componentType);
+    setFramework(rerun.framework as Framework);
+    setComponentLibrary(rerun.componentLibrary as ComponentLibrary);
+    setUseLlm(rerun.useLlm);
+    if (rerun.model) setSelectedModel(rerun.model);
+    if (rerun.files.length > 0) {
+      setFiles(rerun.files);
+      setActiveFile(0);
+      setLlmUsed(rerun.useLlm);
+      setUsedModel(rerun.model ?? null);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     window.desktop.ollama.getStatus().then(status => {

@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router';
 import GeneratePage from './GeneratePage';
 
 const mockDesktop = (window as unknown as { desktop: typeof window.desktop }).desktop;
@@ -25,13 +26,13 @@ beforeEach(() => {
 
 describe('GeneratePage', () => {
   it('renders heading and component type input', async () => {
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     expect(screen.getByRole('heading', { name: 'Generate' })).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/button, card, modal/i)).toBeInTheDocument();
   });
 
   it('shows Ollama warning banner when Ollama is not running', async () => {
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => {
       expect(screen.getByText(/ollama is not running/i)).toBeInTheDocument();
     });
@@ -43,14 +44,14 @@ describe('GeneratePage', () => {
       models: [{ name: 'llama2' }],
       error: null,
     });
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => {
       expect(screen.queryByText(/ollama is not running/i)).not.toBeInTheDocument();
     });
   });
 
   it('disables Generate button when component type is empty', async () => {
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByText(/ollama is not running/i));
     const btn = screen.getByRole('button', { name: /generate/i });
     expect(btn).toBeDisabled();
@@ -58,7 +59,7 @@ describe('GeneratePage', () => {
 
   it('generates component and shows code output', async () => {
     const user = userEvent.setup();
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByText(/ollama is not running/i));
 
     await user.type(screen.getByPlaceholderText(/button, card, modal/i), 'button');
@@ -71,7 +72,7 @@ describe('GeneratePage', () => {
 
   it('shows template badge after template generation', async () => {
     const user = userEvent.setup();
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByText(/ollama is not running/i));
 
     await user.type(screen.getByPlaceholderText(/button, card, modal/i), 'button');
@@ -88,7 +89,7 @@ describe('GeneratePage', () => {
       error: 'Generation failed',
     });
     const user = userEvent.setup();
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByText(/ollama is not running/i));
 
     await user.type(screen.getByPlaceholderText(/button, card, modal/i), 'card');
@@ -101,7 +102,7 @@ describe('GeneratePage', () => {
 
   it('shows file tab for generated file', async () => {
     const user = userEvent.setup();
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByText(/ollama is not running/i));
 
     await user.type(screen.getByPlaceholderText(/button, card, modal/i), 'button');
@@ -114,7 +115,7 @@ describe('GeneratePage', () => {
 
   it('saves to disk and shows saved path', async () => {
     const user = userEvent.setup();
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByText(/ollama is not running/i));
 
     await user.type(screen.getByPlaceholderText(/button, card, modal/i), 'button');
@@ -133,7 +134,7 @@ describe('GeneratePage', () => {
       error: 'Save failed',
     });
     const user = userEvent.setup();
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByText(/ollama is not running/i));
 
     await user.type(screen.getByPlaceholderText(/button, card, modal/i), 'button');
@@ -148,7 +149,7 @@ describe('GeneratePage', () => {
 
   it('shows history button after first generation', async () => {
     const user = userEvent.setup();
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByText(/ollama is not running/i));
 
     expect(screen.queryByText(/history/i)).not.toBeInTheDocument();
@@ -162,7 +163,7 @@ describe('GeneratePage', () => {
 
   it('toggles history panel when history button clicked', async () => {
     const user = userEvent.setup();
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByText(/ollama is not running/i));
 
     await user.type(screen.getByPlaceholderText(/button, card, modal/i), 'button');
@@ -178,7 +179,7 @@ describe('GeneratePage', () => {
   });
 
   it('disables LLM mode toggle when Ollama is not healthy', async () => {
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByText(/ollama is not running/i));
     const llmBtn = screen.getByRole('button', { name: /llm mode/i });
     expect(llmBtn).toBeDisabled();
@@ -190,7 +191,7 @@ describe('GeneratePage', () => {
       models: [{ name: 'llama2' }],
       error: null,
     });
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /llm mode/i })).not.toBeDisabled();
     });
@@ -203,7 +204,7 @@ describe('GeneratePage', () => {
       error: null,
     });
     const user = userEvent.setup();
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByRole('button', { name: /llm mode/i }));
 
     await user.click(screen.getByRole('button', { name: /llm mode/i }));
@@ -224,7 +225,7 @@ describe('GeneratePage', () => {
       model: 'mistral',
     });
     const user = userEvent.setup();
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByRole('button', { name: /llm mode/i }));
     await user.click(screen.getByRole('button', { name: /llm mode/i }));
     const select = await screen.findByLabelText('Model');
@@ -234,7 +235,7 @@ describe('GeneratePage', () => {
 
   it('framework tabs switch framework selection', async () => {
     const user = userEvent.setup();
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByText(/ollama is not running/i));
 
     const vueBtn = screen.getByRole('button', { name: /^vue$/i });
@@ -249,7 +250,7 @@ describe('GeneratePage', () => {
     const user = userEvent.setup();
     const writeText = vi.fn().mockResolvedValue(undefined);
     vi.stubGlobal('navigator', { ...navigator, clipboard: { writeText } });
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByText(/ollama is not running/i));
 
     await user.type(screen.getByPlaceholderText(/button, card, modal/i), 'button');
@@ -270,7 +271,7 @@ describe('GeneratePage', () => {
       llmUsed: false,
     });
     const user = userEvent.setup();
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByText(/ollama is not running/i));
 
     await user.type(screen.getByPlaceholderText(/button, card, modal/i), 'button');
@@ -286,7 +287,7 @@ describe('GeneratePage', () => {
 
   it('loads entry from history panel and restores form state', async () => {
     const user = userEvent.setup();
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByText(/ollama is not running/i));
 
     // generate first to create history entry
@@ -313,7 +314,7 @@ describe('GeneratePage', () => {
 
   it('clears history when clear button clicked', async () => {
     const user = userEvent.setup();
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByText(/ollama is not running/i));
 
     await user.type(screen.getByPlaceholderText(/button, card, modal/i), 'button');
@@ -333,7 +334,7 @@ describe('GeneratePage', () => {
 
   it('component library tabs switch selection', async () => {
     const user = userEvent.setup();
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByText(/ollama is not running/i));
 
     const radixBtn = screen.getByRole('button', { name: /^radix$/i });
@@ -358,7 +359,7 @@ describe('GeneratePage', () => {
     localStorage.setItem('siza:generation-history', JSON.stringify([recentEntry]));
 
     const user = userEvent.setup();
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByText(/ollama is not running/i));
 
     // open history panel
@@ -379,7 +380,7 @@ describe('GeneratePage', () => {
     localStorage.setItem('siza:generation-history', JSON.stringify([entry]));
 
     const user = userEvent.setup();
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByText(/ollama is not running/i));
 
     await user.click(screen.getByText(/history \(1\)/i));
@@ -399,7 +400,7 @@ describe('GeneratePage', () => {
     localStorage.setItem('siza:generation-history', JSON.stringify([entry]));
 
     const user = userEvent.setup();
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByText(/ollama is not running/i));
 
     await user.click(screen.getByText(/history \(1\)/i));
@@ -420,7 +421,7 @@ describe('GeneratePage', () => {
     localStorage.setItem('siza:generation-history', JSON.stringify([entry]));
 
     const user = userEvent.setup();
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByText(/ollama is not running/i));
 
     await user.click(screen.getByText(/history \(1\)/i));
@@ -443,7 +444,7 @@ describe('GeneratePage', () => {
     localStorage.setItem('siza:generation-history', JSON.stringify([llmEntry]));
 
     const user = userEvent.setup();
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByText(/ollama is not running/i));
 
     await user.click(screen.getByText(/history \(1\)/i));
@@ -464,7 +465,7 @@ describe('GeneratePage', () => {
     localStorage.setItem('siza:generation-history', JSON.stringify([llmEntry]));
 
     const user = userEvent.setup();
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByText(/ollama is not running/i));
 
     await user.click(screen.getByText(/history \(1\)/i));
@@ -479,7 +480,7 @@ describe('GeneratePage', () => {
       model: 'llama2',
     });
     const user = userEvent.setup();
-    render(<GeneratePage />);
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
     await waitFor(() => screen.getByText(/ollama is not running/i));
 
     await user.type(screen.getByPlaceholderText(/button, card, modal/i), 'button');
@@ -487,6 +488,53 @@ describe('GeneratePage', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/LLM · llama2/)).toBeInTheDocument();
+    });
+  });
+
+  it('pre-fills form from location.state.rerun', async () => {
+    const rerunEntry = {
+      id: 'r1',
+      timestamp: Date.now(),
+      componentType: 'Card',
+      framework: 'vue',
+      componentLibrary: 'radix',
+      useLlm: false,
+      files: [{ path: 'Card.vue', content: '<template><div>Card</div></template>', language: 'vue' }],
+    };
+    render(
+      <MemoryRouter initialEntries={[{ pathname: '/generate', state: { rerun: rerunEntry } }]}>
+        <GeneratePage />
+      </MemoryRouter>
+    );
+    await waitFor(() => {
+      expect((screen.getByPlaceholderText(/button, card, modal/i) as HTMLInputElement).value).toBe('Card');
+    });
+    expect(screen.getByText('Card.vue')).toBeInTheDocument();
+  });
+
+  it('pre-fills LLM model from location.state.rerun when useLlm is true', async () => {
+    (mockDesktop.ollama.getStatus as ReturnType<typeof vi.fn>).mockResolvedValue({
+      healthy: true,
+      models: [{ name: 'llama3' }],
+      error: null,
+    });
+    const rerunEntry = {
+      id: 'r2',
+      timestamp: Date.now(),
+      componentType: 'Modal',
+      framework: 'react',
+      componentLibrary: 'shadcn',
+      useLlm: true,
+      model: 'llama3',
+      files: [{ path: 'Modal.tsx', content: 'export function Modal() {}', language: 'tsx' }],
+    };
+    render(
+      <MemoryRouter initialEntries={[{ pathname: '/generate', state: { rerun: rerunEntry } }]}>
+        <GeneratePage />
+      </MemoryRouter>
+    );
+    await waitFor(() => {
+      expect((screen.getByPlaceholderText(/button, card, modal/i) as HTMLInputElement).value).toBe('Modal');
     });
   });
 });
