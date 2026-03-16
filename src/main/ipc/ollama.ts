@@ -4,6 +4,10 @@ import { CHANNELS } from '../../shared/bridge';
 
 let ollamaBaseUrl = 'http://localhost:11434';
 
+export function getBaseUrl(): string {
+  return ollamaBaseUrl;
+}
+
 export function registerOllamaHandlers(): void {
   ipcMain.handle(CHANNELS.ollamaGetBaseUrl, (): string => ollamaBaseUrl);
 

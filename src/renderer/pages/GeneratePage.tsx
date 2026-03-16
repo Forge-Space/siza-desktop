@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Sparkles, Copy, Check, AlertCircle, FileCode } from 'lucide-react';
+import { Sparkles, Copy, Check, AlertCircle, FileCode, Zap } from 'lucide-react';
 import type { OllamaModel, GeneratedFile } from '../../shared/bridge';
 import { cn } from '../lib/utils';
 
@@ -14,18 +14,23 @@ export default function GeneratePage() {
   const [framework, setFramework] = useState<Framework>('react');
   const [componentLibrary, setComponentLibrary] = useState<ComponentLibrary>('shadcn');
   const [models, setModels] = useState<OllamaModel[]>([]);
+  const [selectedModel, setSelectedModel] = useState('');
   const [ollamaHealthy, setOllamaHealthy] = useState<boolean | null>(null);
+  const [useLlm, setUseLlm] = useState(false);
   const [files, setFiles] = useState<GeneratedFile[]>([]);
   const [activeFile, setActiveFile] = useState(0);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [llmUsed, setLlmUsed] = useState<boolean | null>(null);
+  const [usedModel, setUsedModel] = useState<string | null>(null);
 
   useEffect(() => {
     window.desktop.ollama.getStatus().then(status => {
       setOllamaHealthy(status.healthy);
       if (status.healthy && status.models.length > 0) {
         setModels(status.models);
+        setSelectedModel(status.models[0].name);
       }
     });
   }, []);
@@ -36,15 +41,21 @@ export default function GeneratePage() {
     setError(null);
     setFiles([]);
     setActiveFile(0);
+    setLlmUsed(null);
+    setUsedModel(null);
     setLoading(true);
     try {
       const result = await window.desktop.generate.component({
         framework,
         componentType: componentType.trim(),
-        componentLibrary
+        componentLibrary,
+        useLlm: useLlm && ollamaHealthy === true,
+        model: selectedModel || undefined,
       });
       if (result.error) throw new Error(result.error);
       setFiles(result.files);
+      setLlmUsed(result.llmUsed ?? false);
+      setUsedModel(result.model ?? null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Generation failed');
     } finally {
@@ -68,10 +79,10 @@ export default function GeneratePage() {
         </p>
       </div>
 
-      {ollamaHealthy === false && models.length === 0 && (
+      {ollamaHealthy === false && (
         <div className="flex items-center gap-2 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
           <AlertCircle className="w-4 h-4 shrink-0" />
-          Ollama is not running. Template generation still works — start Ollama for LLM-enhanced output.
+          Ollama is not running. Template generation still works — start Ollama to enable LLM mode.
         </div>
       )}
 
@@ -139,18 +150,56 @@ export default function GeneratePage() {
           />
         </div>
 
-        <button
-          type="submit"
-          disabled={loading || !componentType.trim()}
-          className={cn(
-            'flex items-center gap-2 rounded-md bg-primary text-primary-foreground font-medium px-4 py-2 text-sm',
-            'hover:bg-primary/90 transition-colors',
-            'disabled:opacity-50 disabled:cursor-not-allowed'
+        <div className="flex items-center gap-4 flex-wrap">
+          <button
+            type="button"
+            onClick={() => setUseLlm(v => !v)}
+            disabled={!ollamaHealthy}
+            className={cn(
+              'flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
+              useLlm && ollamaHealthy
+                ? 'bg-primary/10 text-primary border border-primary/30'
+                : 'bg-muted text-muted-foreground border border-transparent',
+              !ollamaHealthy && 'cursor-not-allowed opacity-40'
+            )}
+            title={!ollamaHealthy ? 'Start Ollama to enable LLM mode' : undefined}
+          >
+            <Zap className="w-3.5 h-3.5" />
+            LLM mode
+          </button>
+
+          {useLlm && ollamaHealthy && models.length > 0 && (
+            <div className="flex items-center gap-2">
+              <label htmlFor="modelSelect" className="text-sm font-medium text-foreground">Model</label>
+              <select
+                id="modelSelect"
+                value={selectedModel}
+                onChange={e => setSelectedModel(e.target.value)}
+                className={cn(
+                  'rounded-md border border-input bg-background px-2 py-1.5 text-sm text-foreground',
+                  'focus:outline-none focus:ring-2 focus:ring-ring'
+                )}
+              >
+                {models.map(m => (
+                  <option key={m.name} value={m.name}>{m.name}</option>
+                ))}
+              </select>
+            </div>
           )}
-        >
-          <Sparkles className="w-4 h-4" />
-          {loading ? 'Generating…' : 'Generate'}
-        </button>
+
+          <button
+            type="submit"
+            disabled={loading || !componentType.trim()}
+            className={cn(
+              'flex items-center gap-2 rounded-md bg-primary text-primary-foreground font-medium px-4 py-2 text-sm',
+              'hover:bg-primary/90 transition-colors',
+              'disabled:opacity-50 disabled:cursor-not-allowed'
+            )}
+          >
+            <Sparkles className="w-4 h-4" />
+            {loading ? 'Generating…' : 'Generate'}
+          </button>
+        </div>
       </form>
 
       {error && (
@@ -178,14 +227,25 @@ export default function GeneratePage() {
                 </button>
               ))}
             </div>
-            <button
-              type="button"
-              onClick={handleCopy}
-              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-              {copied ? 'Copied' : 'Copy'}
-            </button>
+            <div className="flex items-center gap-3">
+              {llmUsed !== null && (
+                <span className={cn(
+                  'flex items-center gap-1 text-xs',
+                  llmUsed ? 'text-primary' : 'text-muted-foreground'
+                )}>
+                  <Zap className="w-3 h-3" />
+                  {llmUsed ? `LLM${usedModel ? ` · ${usedModel}` : ''}` : 'Template'}
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={handleCopy}
+                className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                {copied ? 'Copied' : 'Copy'}
+              </button>
+            </div>
           </div>
           <pre className={cn(
             'rounded-md border border-border bg-muted p-4 text-sm font-mono',

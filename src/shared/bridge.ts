@@ -33,11 +33,15 @@ export interface GenerateComponentRequest {
   componentType: string;
   props?: Record<string, unknown>;
   componentLibrary?: string;
+  useLlm?: boolean;
+  model?: string;
 }
 
 export interface GenerateComponentResult {
   files: GeneratedFile[];
   error: string | null;
+  llmUsed?: boolean;
+  model?: string;
 }
 
 export interface DesktopBridge {
