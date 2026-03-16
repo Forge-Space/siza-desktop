@@ -7,11 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-03-16
+
 ### Added
 - AuthContext tests (6 tests, 100% coverage)
 - AuthGuard tests (3 tests, 100% coverage)
 - OnboardingGate / router tests (4 tests, 100% coverage)
-- @testing-library/dom (missing peer dep after testing-library upgrade in v0.3.0)
+- `@testing-library/dom` (missing peer dep after testing-library upgrade in v0.3.0)
 - Extended coverage scope to `renderer/context/**` and `renderer/routes/**`
 - 151 tests total (17 suites), coverage: 97.13% stmts / 92.03% branches / 95.53% funcs
 
@@ -70,5 +72,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Code signing documentation (macOS notarization, Windows Authenticode)
 - App icon scaffold (`build/icon.svg`)
 
-[Unreleased]: https://github.com/Forge-Space/siza-desktop/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/Forge-Space/siza-desktop/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.3.0...v0.4.0
+[0.3.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Forge-Space/siza-desktop/releases/tag/v0.1.0
