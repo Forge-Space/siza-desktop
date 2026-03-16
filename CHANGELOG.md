@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-03-16
+
+### Added
+- Improved branch coverage: HistoryPage `formatTime()` hours and date fallback branches (93.18% branches)
+- Improved ollama.ts branch coverage: non-Error throw in getStatus/deleteModel, getModels null models, pullModel empty/malformed NDJSON lines (92.3% branches)
+- `@supabase/supabase-js` 2.99.1 → 2.99.2 patch upgrade
+- `knip` 5.86.0 → 5.87.0 patch upgrade
+- 203 tests total (19 suites); coverage: 98.1% stmts / 91.52% branches / 99.33% funcs
+
 ## [0.7.0] - 2026-03-16
 
 ### Added
@@ -100,7 +109,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Code signing documentation (macOS notarization, Windows Authenticode)
 - App icon scaffold (`build/icon.svg`)
 
-[Unreleased]: https://github.com/Forge-Space/siza-desktop/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/Forge-Space/siza-desktop/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.4.0...v0.5.0
