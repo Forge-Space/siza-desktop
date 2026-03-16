@@ -20,10 +20,10 @@ const mockGenerate = vi.fn().mockResolvedValue({ text: 'const Button = () => <bu
 vi.mock('@forgespace/siza-gen', () => ({
   generateComponent: mockGenerateComponent,
   DEFAULT_DESIGN_CONTEXT: { primaryColor: '#7C3AED' },
-  OllamaProvider: vi.fn().mockImplementation(() => ({
-    isAvailable: mockIsAvailable,
-    generate: mockGenerate,
-  })),
+  OllamaProvider: vi.fn(function (this: { isAvailable: typeof mockIsAvailable; generate: typeof mockGenerate }) {
+    this.isAvailable = mockIsAvailable;
+    this.generate = mockGenerate;
+  }),
 }));
 
 const { registerGenerateHandlers } = await import('./generate');
