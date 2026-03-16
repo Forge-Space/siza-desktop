@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Upgraded `@forgespace/siza-gen` to 0.13.2 (semantic token fixes)
+- Upgraded `vitest` + `@vitest/coverage-v8` to 4.1.0 (must match exactly)
+- Upgraded `electron` to 41.0.2
+- Upgraded `@types/node` to 25
+- Upgraded `vite-plugin-electron` to 0.29.1
+
 ## [0.2.0] - 2026-03-16
 
 ### Added
