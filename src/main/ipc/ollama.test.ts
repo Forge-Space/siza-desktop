@@ -154,4 +154,44 @@ describe('registerOllamaHandlers', () => {
     const result = await (handlers.get(CHANNELS.ollamaDeleteModel)!(null, 'llama3') as Promise<{ success: boolean; error: string | null }>);
     expect(result).toEqual({ success: false, error: 'ECONNREFUSED' });
   });
+
+  it('getStatus returns Connection failed for non-Error throw', async () => {
+    global.fetch = vi.fn().mockRejectedValue('string error');
+    const result = await (handlers.get(CHANNELS.ollamaGetStatus)!(null) as Promise<{ healthy: boolean; error: string }>);
+    expect(result.healthy).toBe(false);
+    expect(result.error).toBe('Connection failed');
+  });
+
+  it('getModels returns empty array when models is null', async () => {
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ models: null })
+    } as unknown as Response);
+    const result = await (handlers.get(CHANNELS.ollamaGetModels)!(null) as Promise<Array<unknown>>);
+    expect(result).toEqual([]);
+  });
+
+  it('pullModel skips empty lines and malformed JSON in chunk', async () => {
+    const mockReader = {
+      read: vi.fn()
+        .mockResolvedValueOnce({
+          done: false,
+          value: new TextEncoder().encode('\n  \n{"status":"success"}\n{bad json}\n')
+        })
+        .mockResolvedValueOnce({ done: true, value: undefined })
+    };
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      body: { getReader: () => mockReader }
+    } as unknown as Response);
+    const result = await (handlers.get(CHANNELS.ollamaPullModel)!(null, 'llama3') as Promise<{ done: boolean; status: string }>);
+    expect(result.done).toBe(true);
+    expect(result.status).toBe('success');
+  });
+
+  it('deleteModel returns Delete failed for non-Error throw', async () => {
+    global.fetch = vi.fn().mockRejectedValue('string error');
+    const result = await (handlers.get(CHANNELS.ollamaDeleteModel)!(null, 'llama3') as Promise<{ success: boolean; error: string | null }>);
+    expect(result).toEqual({ success: false, error: 'Delete failed' });
+  });
 });

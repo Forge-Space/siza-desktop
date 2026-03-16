@@ -264,4 +264,21 @@ describe('HistoryPage', () => {
       expect(screen.getByText('Button.tsx')).toBeInTheDocument();
     });
   });
+
+  it('shows Xh ago for entries 2 hours old', () => {
+    const twoHoursAgo = Date.now() - 2 * 3_600_000 - 60_000;
+    const entry = { ...mockEntry, timestamp: twoHoursAgo };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([entry]));
+    renderInRouter();
+    expect(screen.getByText('2h ago')).toBeInTheDocument();
+  });
+
+  it('shows locale date for entries over 1 day old', () => {
+    const twoDaysAgo = Date.now() - 2 * 86_400_000;
+    const entry = { ...mockEntry, timestamp: twoDaysAgo };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([entry]));
+    renderInRouter();
+    const expectedDate = new Date(twoDaysAgo).toLocaleDateString();
+    expect(screen.getByText(expectedDate)).toBeInTheDocument();
+  });
 });
