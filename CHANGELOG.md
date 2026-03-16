@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-03-16
+
+### Added
+- **Ollama Model Manager** — new `/models` route with `ModelManagerPage` component
+  - Browse all installed Ollama models with name and size display
+  - Pull new models by name with real-time streaming progress bar (per-chunk percentage)
+  - Delete installed models with confirmation feedback
+  - Refresh model list manually
+- IPC handlers: `ollama:get-models`, `ollama:pull-model` (streaming), `ollama:delete-model`
+- `OllamaPullProgress` and `OllamaDeleteResult` types in `bridge.ts`
+- Models nav item (Package icon) in `AppShell` sidebar
+- 19 new tests (170 total, 18 suites); coverage: 96.08% stmts / 87.91% branches / 94.65% funcs
+
 ## [0.4.0] - 2026-03-16
 
 ### Added
@@ -72,7 +85,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Code signing documentation (macOS notarization, Windows Authenticode)
 - App icon scaffold (`build/icon.svg`)
 
-[Unreleased]: https://github.com/Forge-Space/siza-desktop/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/Forge-Space/siza-desktop/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.1.0...v0.2.0
