@@ -29,25 +29,25 @@ describe('AppShell', () => {
 
   it('renders nav buttons for Generate, History, Models, and Settings', () => {
     renderInRouter('/generate');
-    expect(screen.getByTitle('Generate')).toBeInTheDocument();
-    expect(screen.getByTitle('History')).toBeInTheDocument();
-    expect(screen.getByTitle('Models')).toBeInTheDocument();
-    expect(screen.getByTitle('Settings')).toBeInTheDocument();
+    expect(screen.getByTitle('Generate (⌘G)')).toBeInTheDocument();
+    expect(screen.getByTitle('History (⌘H)')).toBeInTheDocument();
+    expect(screen.getByTitle('Models (⌘M)')).toBeInTheDocument();
+    expect(screen.getByTitle('Settings (⌘,)')).toBeInTheDocument();
   });
 
   it('highlights Generate nav button when on /generate', () => {
     renderInRouter('/generate');
-    const generateBtn = screen.getByTitle('Generate');
+    const generateBtn = screen.getByTitle('Generate (⌘G)');
     expect(generateBtn).toHaveClass('bg-primary');
-    const settingsBtn = screen.getByTitle('Settings');
+    const settingsBtn = screen.getByTitle('Settings (⌘,)');
     expect(settingsBtn).not.toHaveClass('bg-primary');
   });
 
   it('highlights Settings nav button when on /settings', () => {
     renderInRouter('/settings');
-    const settingsBtn = screen.getByTitle('Settings');
+    const settingsBtn = screen.getByTitle('Settings (⌘,)');
     expect(settingsBtn).toHaveClass('bg-primary');
-    const generateBtn = screen.getByTitle('Generate');
+    const generateBtn = screen.getByTitle('Generate (⌘G)');
     expect(generateBtn).not.toHaveClass('bg-primary');
   });
 
@@ -55,7 +55,7 @@ describe('AppShell', () => {
     const user = userEvent.setup();
     renderInRouter('/settings');
 
-    const generateBtn = screen.getByTitle('Generate');
+    const generateBtn = screen.getByTitle('Generate (⌘G)');
     await user.click(generateBtn);
     // After navigation, Generate button becomes active
     expect(generateBtn).toHaveClass('bg-primary');
@@ -65,7 +65,7 @@ describe('AppShell', () => {
     const user = userEvent.setup();
     renderInRouter('/generate');
 
-    const settingsBtn = screen.getByTitle('Settings');
+    const settingsBtn = screen.getByTitle('Settings (⌘,)');
     await user.click(settingsBtn);
     expect(settingsBtn).toHaveClass('bg-primary');
   });

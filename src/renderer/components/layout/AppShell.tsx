@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from 'react-router';
 import { Sparkles, Settings, Package, History } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { useKeyboardShortcuts, SHORTCUT_LABELS } from '../../hooks/useKeyboardShortcuts';
 
 const NAV_ITEMS = [
   { to: '/generate', icon: Sparkles, label: 'Generate' },
@@ -16,6 +17,7 @@ interface AppShellProps {
 export default function AppShell({ children }: AppShellProps) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  useKeyboardShortcuts();
 
   return (
     <div className="flex h-screen bg-background text-foreground">
@@ -29,7 +31,7 @@ export default function AppShell({ children }: AppShellProps) {
           <button
             key={to}
             onClick={() => navigate(to)}
-            title={label}
+            title={`${label} (${SHORTCUT_LABELS[to]})`}
             className={cn(
               'w-10 h-10 flex items-center justify-center rounded-md transition-colors',
               pathname === to

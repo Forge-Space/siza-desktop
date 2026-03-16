@@ -7,8 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-03-16
+
+### Added
+- Keyboard shortcuts for navigation: `⌘G`/`Ctrl+G` → Generate, `⌘H`/`Ctrl+H` → History, `⌘M`/`Ctrl+M` → Models, `⌘,`/`Ctrl+,` → Settings
+- `useKeyboardShortcuts` hook (`src/renderer/hooks/useKeyboardShortcuts.ts`) with input-field awareness (shortcuts are suppressed when focus is in an input or textarea)
+- Shortcut hints shown in nav button tooltips (e.g. `Generate (⌘G)`)
 - Upgraded typescript-eslint 8.57.0→8.57.1 (patch)
-- Updated siza-desktop skill to v1.12.0
+- Updated siza-desktop skill to v1.13.0
+- 237 tests total (21 suites); coverage: 98.05% stmts / 93.2% branches / 98.08% funcs
 
 ## [1.1.0] - 2026-03-16
 
