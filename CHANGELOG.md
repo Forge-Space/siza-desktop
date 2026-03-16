@@ -7,12 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-03-16
+
+### Added
+- Branch coverage tests for updater IPC (non-Error download failure), generate IPC (vue/svelte file extensions), auth IPC (empty decrypted data, missing email fallback)
+- 138 tests total (up from 133)
+
 ### Changed
 - Upgraded `@forgespace/siza-gen` to 0.13.2 (semantic token fixes)
 - Upgraded `vitest` + `@vitest/coverage-v8` to 4.1.0 (must match exactly)
 - Upgraded `electron` to 41.0.2
 - Upgraded `@types/node` to 25
 - Upgraded `vite-plugin-electron` to 0.29.1
+- `@vitejs/plugin-react` v6 and `vite` v8 upgrades blocked (require each other; @tailwindcss/vite@4 pins vite ≤7)
 
 ## [0.2.0] - 2026-03-16
 
