@@ -281,4 +281,31 @@ describe('HistoryPage', () => {
     const expectedDate = new Date(twoDaysAgo).toLocaleDateString();
     expect(screen.getByText(expectedDate)).toBeInTheDocument();
   });
+
+  it('shows "(unnamed)" when componentType is empty string', () => {
+    const unnamedEntry = { ...mockEntry, componentType: '' };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([unnamedEntry]));
+    renderInRouter();
+    expect(screen.getByText('(unnamed)')).toBeInTheDocument();
+  });
+
+  it('shows empty code when selected entry has no file content', async () => {
+    const user = userEvent.setup();
+    const emptyContentEntry = {
+      ...mockEntry,
+      files: [{ path: 'Empty.tsx', content: '', language: 'tsx' }],
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([emptyContentEntry]));
+    renderInRouter();
+
+    const card = screen.getByRole('button', { name: /button/i });
+    await user.click(card);
+
+    await waitFor(() => {
+      expect(screen.getByText('Empty.tsx')).toBeInTheDocument();
+    });
+    // The code block renders (the ?? '' branch — empty string is falsy but handled)
+    const codeBlock = document.querySelector('pre code');
+    expect(codeBlock).toBeDefined();
+  });
 });

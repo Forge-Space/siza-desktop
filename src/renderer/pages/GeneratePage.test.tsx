@@ -491,6 +491,121 @@ describe('GeneratePage', () => {
     });
   });
 
+  it('shows "Generation failed" fallback when generate throws non-Error', async () => {
+    (mockDesktop.generate.component as ReturnType<typeof vi.fn>).mockRejectedValue('string error');
+    const user = userEvent.setup();
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
+    await waitFor(() => screen.getByText(/ollama is not running/i));
+
+    await user.type(screen.getByPlaceholderText(/button, card, modal/i), 'button');
+    await user.click(screen.getByRole('button', { name: /generate/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Generation failed')).toBeInTheDocument();
+    });
+  });
+
+  it('handles result.llmUsed being undefined (defaults to false)', async () => {
+    (mockDesktop.generate.component as ReturnType<typeof vi.fn>).mockResolvedValue({
+      files: [{ path: 'Button.tsx', content: 'export function Button() {}', language: 'tsx' }],
+      error: null,
+      llmUsed: undefined,
+      model: undefined,
+    });
+    const user = userEvent.setup();
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
+    await waitFor(() => screen.getByText(/ollama is not running/i));
+
+    await user.type(screen.getByPlaceholderText(/button, card, modal/i), 'button');
+    await user.click(screen.getByRole('button', { name: /generate/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Button.tsx')).toBeInTheDocument();
+    });
+  });
+
+  it('save to disk does nothing when no files are generated', async () => {
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
+    await waitFor(() => screen.getByText(/ollama is not running/i));
+
+    // No generation, so files is empty — the save button should not be visible
+    expect(screen.queryByRole('button', { name: /save to disk/i })).not.toBeInTheDocument();
+  });
+
+  it('shows "Save failed" fallback when saveGenerated throws non-Error', async () => {
+    (mockDesktop.files.saveGenerated as ReturnType<typeof vi.fn>).mockRejectedValue('string error');
+    const user = userEvent.setup();
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
+    await waitFor(() => screen.getByText(/ollama is not running/i));
+
+    await user.type(screen.getByPlaceholderText(/button, card, modal/i), 'button');
+    await user.click(screen.getByRole('button', { name: /generate/i }));
+    await waitFor(() => screen.getByText('Button.tsx'));
+
+    await user.click(screen.getByRole('button', { name: /save to disk/i }));
+    await waitFor(() => {
+      expect(screen.getByText('Save failed')).toBeInTheDocument();
+    });
+  });
+
+  it('shows "1 file" singular in history panel for single-file entry', async () => {
+    const entry = {
+      id: 'single-file',
+      timestamp: Date.now() - 5000,
+      componentType: 'Badge',
+      framework: 'react',
+      componentLibrary: 'shadcn',
+      useLlm: false,
+      files: [{ path: 'Badge.tsx', content: 'export function Badge() {}', language: 'tsx' }],
+    };
+    localStorage.setItem('siza:generation-history', JSON.stringify([entry]));
+
+    const user = userEvent.setup();
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
+    await waitFor(() => screen.getByText(/ollama is not running/i));
+
+    await user.click(screen.getByText(/history \(1\)/i));
+    expect(screen.getByText('1 file')).toBeInTheDocument();
+  });
+
+  it('shows "Template" badge when llmUsed is false after generation', async () => {
+    (mockDesktop.generate.component as ReturnType<typeof vi.fn>).mockResolvedValue({
+      files: [{ path: 'Button.tsx', content: 'export function Button() {}', language: 'tsx' }],
+      error: null,
+      llmUsed: false,
+      model: null,
+    });
+    const user = userEvent.setup();
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
+    await waitFor(() => screen.getByText(/ollama is not running/i));
+
+    await user.type(screen.getByPlaceholderText(/button, card, modal/i), 'button');
+    await user.click(screen.getByRole('button', { name: /generate/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Template')).toBeInTheDocument();
+    });
+  });
+
+  it('shows "LLM" badge without model name when llmUsed is true but usedModel is null', async () => {
+    (mockDesktop.generate.component as ReturnType<typeof vi.fn>).mockResolvedValue({
+      files: [{ path: 'Button.tsx', content: 'export function Button() {}', language: 'tsx' }],
+      error: null,
+      llmUsed: true,
+      model: null,
+    });
+    const user = userEvent.setup();
+    render(<MemoryRouter><GeneratePage /></MemoryRouter>);
+    await waitFor(() => screen.getByText(/ollama is not running/i));
+
+    await user.type(screen.getByPlaceholderText(/button, card, modal/i), 'button');
+    await user.click(screen.getByRole('button', { name: /generate/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('LLM')).toBeInTheDocument();
+    });
+  });
+
   it('pre-fills form from location.state.rerun', async () => {
     const rerunEntry = {
       id: 'r1',

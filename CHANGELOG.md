@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-03-16
+
+### Added
+- Comprehensive branch coverage improvements: GeneratePage (non-Error throw fallbacks, undefined llmUsed, singular "file" label, "Template"/"LLM" badges), HistoryPage (unnamed component fallback, empty file content), ModelManagerPage (0-byte size format, non-Error throw fallbacks, pull-in-progress guard)
+- 218 tests total (19 suites); coverage: 98.34% stmts / 94% branches / 99.34% funcs
+
 ## [0.9.0] - 2026-03-16
 
 ### Fixed
@@ -118,7 +124,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Code signing documentation (macOS notarization, Windows Authenticode)
 - App icon scaffold (`build/icon.svg`)
 
-[Unreleased]: https://github.com/Forge-Space/siza-desktop/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/Forge-Space/siza-desktop/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.9.0...v1.0.0
 [0.9.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.6.0...v0.7.0

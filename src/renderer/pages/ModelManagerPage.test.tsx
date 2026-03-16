@@ -122,6 +122,45 @@ describe('ModelManagerPage', () => {
     expect(await screen.findByText('Delete failed')).toBeInTheDocument();
   });
 
+  it('shows "0 B" for model with size 0', async () => {
+    vi.mocked(window.desktop.ollama.getModels).mockResolvedValue([
+      { name: 'tinymodel', size: 0, digest: 'abc' }
+    ]);
+    render(<ModelManagerPage />);
+    expect(await screen.findByText('0 B')).toBeInTheDocument();
+  });
+
+  it('shows fallback error message when getModels throws non-Error', async () => {
+    vi.mocked(window.desktop.ollama.getModels).mockRejectedValue('string error');
+    render(<ModelManagerPage />);
+    expect(await screen.findByText('Failed to load models')).toBeInTheDocument();
+  });
+
+  it('pull button is disabled while a pull is in progress', async () => {
+    vi.mocked(window.desktop.ollama.pullModel).mockImplementation(() => {
+      return new Promise(() => {}); // never resolves — simulates in-progress
+    });
+    render(<ModelManagerPage />);
+    await screen.findByText('llama3.2');
+    const input = screen.getByPlaceholderText(/e\.g\./i);
+    fireEvent.change(input, { target: { value: 'model1' } });
+    const pullBtn = screen.getByRole('button', { name: /^pull$/i });
+    fireEvent.click(pullBtn);
+    // Button should become disabled while running (pullState.running=true)
+    await waitFor(() => expect(pullBtn).toBeDisabled());
+  });
+
+  it('shows "Pull failed" fallback when pullModel throws non-Error', async () => {
+    vi.mocked(window.desktop.ollama.pullModel).mockRejectedValue('string error');
+    render(<ModelManagerPage />);
+    await screen.findByText('llama3.2');
+    const input = screen.getByPlaceholderText(/e\.g\./i);
+    fireEvent.change(input, { target: { value: 'badmodel' } });
+    const pullBtn = screen.getByRole('button', { name: /^pull$/i });
+    await act(async () => { fireEvent.click(pullBtn); });
+    expect(await screen.findByText('Pull failed')).toBeInTheDocument();
+  });
+
   it('shows pull progress bar when pulling', async () => {
     let progressCallback: ((p: { status: string; total: number; completed: number; done: boolean }) => void) | null = null;
     vi.mocked(window.desktop.ollama.pullModel).mockImplementation((_name, onProgress) => {
