@@ -28,6 +28,8 @@ export default defineConfig({
         'src/renderer/hooks/**/*.ts',
         'src/renderer/components/**/*.tsx',
         'src/renderer/pages/**/*.tsx',
+        'src/renderer/context/**/*.tsx',
+        'src/renderer/routes/**/*.tsx',
       ],
       exclude: [
         'src/**/*.test.{ts,tsx}',
