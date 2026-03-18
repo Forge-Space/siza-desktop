@@ -14,12 +14,15 @@ jobs:
       matrix:
         include:
           - os: macos-latest
+            platform: mac
             target: dmg
             artifact: '*.dmg'
           - os: windows-latest
+            platform: win
             target: nsis
             artifact: '*.exe'
           - os: ubuntu-latest
+            platform: linux
             target: AppImage
             artifact: '*.AppImage'
 
@@ -45,7 +48,18 @@ jobs:
       - name: Build Electron app
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run electron:build -- --${{ matrix.target }} --publish never
+        run: npm run electron:build -- --${{ matrix.platform }} ${{ matrix.target }}
+
+      - name: Validate packaged artifacts exist
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! compgen -G "dist-electron/${{ matrix.artifact }}" > /dev/null; then
+            echo "Expected artifact pattern not found: dist-electron/${{ matrix.artifact }}"
+            echo "Current dist-electron contents:"
+            ls -la dist-electron || true
+            exit 1
+          fi
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v7
