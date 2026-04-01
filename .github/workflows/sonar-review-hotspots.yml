@@ -56,3 +56,4 @@ print('Total vulnerabilities:', d.get('total', 0))
 for i in d.get('issues', []):
     print(f\"  [{i.get('severity')}] {i.get('rule')} - {i.get('component','').split(':')[-1]}:{i.get('line','?')} - {i.get('message','')[:100]}\")
 "
+
