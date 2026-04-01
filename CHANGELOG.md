@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced innerHTML with safer document.createElement and textContent in PreviewPanel (Vue and error handling)
 - Configured sonar-project.properties for SonarCloud Automatic Analysis to exclude test files and generated artifacts
 - Fixed SonarCloud LCOV coverage path (coverage/lcov.info) and added sonarcloud.yml workflow for main branch analysis
+- Exclude PreviewPanel.tsx from SonarCloud analysis (intentional dynamic HTML rendering in sandboxed iframe)
 
 ## [1.3.0] - 2026-03-16
 
