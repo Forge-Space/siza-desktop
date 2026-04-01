@@ -10,8 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - SonarCloud quality gate security rating failure by removing innerHTML security hotspots
 - Replaced innerHTML with safer document.createElement and textContent in PreviewPanel (Vue and error handling)
-- Configured SonarCloud integration with security hotspot scanning and 100% review enforcement
-- Excluded test files and generated artifacts from security analysis
+- Configured sonar-project.properties for SonarCloud Automatic Analysis to exclude test files and generated artifacts
 
 ## [1.3.0] - 2026-03-16
 
