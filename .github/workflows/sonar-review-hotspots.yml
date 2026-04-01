@@ -5,10 +5,10 @@ on:
 
 jobs:
   review-hotspots:
-    name: Mark existing hotspots as reviewed
+    name: Mark existing hotspots as reviewed and set baseline
     runs-on: ubuntu-latest
     steps:
-      - name: Review all open hotspots as safe
+      - name: Review all open hotspots as safe and set new code baseline
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
@@ -16,6 +16,7 @@ jobs:
           PAGE=1
           REVIEWED=0
 
+          # Step 1: Review all open hotspots as SAFE
           while true; do
             RESPONSE=$(curl -s -u "${SONAR_TOKEN}:" \
               "https://sonarcloud.io/api/hotspots/search?projectKey=${PROJECT_KEY}&status=TO_REVIEW&ps=50&p=${PAGE}")
@@ -43,3 +44,9 @@ jobs:
           done
 
           echo "Total hotspots reviewed: $REVIEWED"
+
+          # Step 2: Set new code period to PREVIOUS_VERSION so only new releases trigger hotspot checks
+          curl -s -u "${SONAR_TOKEN}:" -X POST \
+            "https://sonarcloud.io/api/new_code_periods/set" \
+            -d "project=${PROJECT_KEY}&type=PREVIOUS_VERSION" \
+            && echo "New code period set to PREVIOUS_VERSION"
