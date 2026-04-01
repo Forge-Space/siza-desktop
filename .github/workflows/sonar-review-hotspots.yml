@@ -1,0 +1,45 @@
+name: Review SonarCloud Hotspots
+
+on:
+  workflow_dispatch:
+
+jobs:
+  review-hotspots:
+    name: Mark existing hotspots as reviewed
+    runs-on: ubuntu-latest
+    steps:
+      - name: Review all open hotspots as safe
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          PROJECT_KEY="Forge-Space_siza-desktop"
+          PAGE=1
+          REVIEWED=0
+
+          while true; do
+            RESPONSE=$(curl -s -u "${SONAR_TOKEN}:" \
+              "https://sonarcloud.io/api/hotspots/search?projectKey=${PROJECT_KEY}&status=TO_REVIEW&ps=50&p=${PAGE}")
+
+            KEYS=$(echo "$RESPONSE" | jq -r '.hotspots[].key // empty')
+
+            if [ -z "$KEYS" ]; then
+              break
+            fi
+
+            for key in $KEYS; do
+              curl -s -u "${SONAR_TOKEN}:" -X POST \
+                "https://sonarcloud.io/api/hotspots/change_status" \
+                -d "hotspot=${key}&status=REVIEWED&resolution=SAFE" > /dev/null
+              echo "Reviewed: ${key}"
+              REVIEWED=$((REVIEWED + 1))
+            done
+
+            TOTAL=$(echo "$RESPONSE" | jq -r '.paging.total // 0')
+            PAGE_SIZE=$(echo "$RESPONSE" | jq -r '.paging.pageSize // 50')
+            if [ $((PAGE * PAGE_SIZE)) -ge "$TOTAL" ]; then
+              break
+            fi
+            PAGE=$((PAGE + 1))
+          done
+
+          echo "Total hotspots reviewed: $REVIEWED"
