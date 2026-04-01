@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SonarCloud quality gate security rating failure by removing innerHTML security hotspots
 - Replaced innerHTML with safer document.createElement and textContent in PreviewPanel (Vue and error handling)
 - Configured sonar-project.properties for SonarCloud Automatic Analysis to exclude test files and generated artifacts
+- Fixed SonarCloud LCOV coverage path (coverage/lcov.info) and added sonarcloud.yml workflow for main branch analysis
 
 ## [1.3.0] - 2026-03-16
 
