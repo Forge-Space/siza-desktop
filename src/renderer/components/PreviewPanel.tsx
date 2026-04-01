@@ -30,7 +30,10 @@ function buildHtml(files: GeneratedFile[], framework: string): string {
 <body>
   <div id="app"></div>
   <script type="module">
-    document.getElementById('app').innerHTML = '<div style="padding:8px;background:#f5f5f5;border-radius:4px;font-family:monospace;font-size:12px;white-space:pre-wrap">${escaped}</div>';
+    const codeDiv = document.createElement('div');
+    codeDiv.style.cssText = 'padding:8px;background:#f5f5f5;border-radius:4px;font-family:monospace;font-size:12px;white-space:pre-wrap';
+    codeDiv.textContent = '${code}';
+    document.getElementById('app').appendChild(codeDiv);
   ${CLOSE_SCRIPT}
 </body>
 </html>`;
@@ -101,7 +104,10 @@ try {
   }, 'Component rendered (no default export found for live preview)');
   root.render(React.createElement(Comp));
 } catch(e) {
-  document.getElementById('root').innerHTML = '<pre style="color:red;padding:8px">' + e.message + '</pre>';
+  const errorDiv = document.createElement('pre');
+  errorDiv.style.cssText = 'color:red;padding:8px;margin:0';
+  errorDiv.textContent = e instanceof Error ? e.message : String(e);
+  document.getElementById('root').appendChild(errorDiv);
 }
   ${CLOSE_SCRIPT}
 </body>
