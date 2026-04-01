@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Configured sonar-project.properties for SonarCloud Automatic Analysis to exclude test files and generated artifacts
 - Fixed SonarCloud LCOV coverage path (coverage/lcov.info) and added sonarcloud.yml workflow for main branch analysis
 - Exclude PreviewPanel.tsx from SonarCloud analysis (intentional dynamic HTML rendering in sandboxed iframe)
+- Moved `contents: write` permission from workflow level to `release` job only in release.yml (SonarCloud S8233)
 
 ## [1.3.0] - 2026-03-16
 
