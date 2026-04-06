@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-04-06
+
+### Changed
+- Electron 41.0.3 → 41.1.1 (security hotspot fixes)
+- TypeScript 6.0.2 (group updates)
+- lucide-react 0.577.0 → 1.7.0
+- @supabase/supabase-js 2.99.3 → 2.101.1
+
+### Fixed
+- SonarCloud security hotspots (innerHTML removal continued from v1.3.1)
+
 ## [1.3.1] - 2026-04-04
 
 ### Fixed
@@ -159,7 +170,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Code signing documentation (macOS notarization, Windows Authenticode)
 - App icon scaffold (`build/icon.svg`)
 
-[Unreleased]: https://github.com/Forge-Space/siza-desktop/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/Forge-Space/siza-desktop/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/Forge-Space/siza-desktop/compare/v1.3.1...v1.4.0
+[1.3.1]: https://github.com/Forge-Space/siza-desktop/compare/v1.3.0...v1.3.1
+[1.3.0]: https://github.com/Forge-Space/siza-desktop/compare/v1.2.0...v1.3.0
+[1.2.0]: https://github.com/Forge-Space/siza-desktop/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/Forge-Space/siza-desktop/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.9.0...v1.0.0
 [0.9.0]: https://github.com/Forge-Space/siza-desktop/compare/v0.8.0...v0.9.0
