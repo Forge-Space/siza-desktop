@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@forgespace/siza-gen": "^0.13.2",
-    "@supabase/supabase-js": "^2.101.1",
+    "@supabase/supabase-js": "^2.103.0",
     "@tailwindcss/vite": "^4.2.1",
     "clsx": "^2.1.1",
     "electron-updater": "^6.8.3",
